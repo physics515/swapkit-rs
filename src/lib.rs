@@ -6,7 +6,7 @@
 //! Swapkit’s SDK gives developers API access to a powerful suite of non-custodial, permissionless `DeFi` tools to interact with 5,500+ crypto assets across 14+ blockchains including Bitcoin, Ethereum, BNB Chain via `THORChain`, Chainflip and Maya Protocol.
 //!
 //! ## swapkit-rs
-//! This is the Unofficial Rust SDK for `SwapKit`. It aims to provide a fully typeed client for the Swapkit API.
+//! This is the Unofficial Rust bindings for `SwapKit`. It aims to provide a fully typeed client for the Swapkit API.
 //!
 //! The client is rate limited to 1 request per second by default but this can be changed by creating a new `Configuration` object and passing it to the `Config::set_rate_limit_ms()` method.
 //!
