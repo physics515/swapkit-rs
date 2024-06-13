@@ -11,7 +11,7 @@
 //! The client is rate limited to 1 request per second by default but this can be changed by creating a new `Configuration` object and passing it to the `Config::set_rate_limit_ms()` method.
 //!
 //! ## Supported Endpoints
-//! * `get_chains` - Returns a list of all supported chains.
+//! * `get_chains` - Returns a list of all supported chains.9++
 //! * `get_chains_with_details` - Returns a list of all supported chains with details.
 //! * `get_gas_prices` - Returns a list of gas prices for all supported chains.
 //! * `get_available_assets_for_pool` - ***Errors (Thorswap endpoint does not return a value.)***
@@ -28,7 +28,7 @@
 //! * `get_token_pair_exchange_rate` - Returns the exchange rate for a given token pair.
 //! * `get_cached_prices` - Returns the cached prices for given tokens.
 //! * `get_token_providers` - Returns a list of all token providers.
-//! * `get_transaction_details` - *** Errors (Thorswap endpoint does not return a value.)***
+//! * `get_transaction_details` - ***Errors (Thorswap endpoint does not return a value.)***
 //!
 //!
 //!
