@@ -35,8 +35,8 @@ pub struct CachedPrice {
 	#[serde(rename = "price_usd", serialize_with = "rust_decimal::serde::str_option::serialize", deserialize_with = "deserialize_rust_decimal_from_anything_option", default = "deserialize_rust_decimal_from_anything_option_default")]
 	price_usd: Option<Decimal>,
 
-	#[serde(serialize_with = "rust_decimal::serde::str::serialize", deserialize_with = "rust_decimal::serde::float::deserialize")]
-	timestamp: Decimal,
+	#[serde(serialize_with = "rust_decimal::serde::str_option::serialize", deserialize_with = "deserialize_rust_decimal_from_anything_option", default = "deserialize_rust_decimal_from_anything_option_default")]
+	timestamp: Option<Decimal>,
 }
 
 impl CachedPrice {
@@ -61,7 +61,7 @@ impl CachedPrice {
 	}
 
 	#[must_use]
-	pub const fn get_timestamp(&self) -> Decimal {
+	pub const fn get_timestamp(&self) -> Option<Decimal> {
 		self.timestamp
 	}
 }

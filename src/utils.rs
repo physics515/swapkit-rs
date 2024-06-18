@@ -61,7 +61,7 @@ where
 }
 
 #[allow(clippy::unnecessary_wraps)]
-pub fn deserialize_rust_decimal_from_anything_option_default() -> Option<Decimal> {
+pub const fn deserialize_rust_decimal_from_anything_option_default() -> Option<Decimal> {
         None
 }
 
