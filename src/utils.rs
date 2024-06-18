@@ -61,6 +61,11 @@ where
 }
 
 #[allow(clippy::unnecessary_wraps)]
+pub fn deserialize_rust_decimal_from_anything_option_default() -> Option<Decimal> {
+        None
+}
+
+#[allow(clippy::unnecessary_wraps)]
 pub fn deserialize_rust_decimal_from_anything<'de, D>(deserializer: D) -> Result<Decimal, D::Error>
 where
 	D: Deserializer<'de>,
