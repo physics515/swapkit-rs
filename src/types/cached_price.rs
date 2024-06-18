@@ -1,5 +1,6 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
+use crate::deserialize_rust_decimal_from_anything_option;
 
 use crate::Sparkline;
 
@@ -30,8 +31,8 @@ pub struct CachedPrice {
 	provider: Option<String>,
 	cg: CachedPriceCG,
 
-	#[serde(rename = "price_usd", serialize_with = "rust_decimal::serde::str::serialize", deserialize_with = "rust_decimal::serde::float::deserialize")]
-	price_usd: Decimal,
+	#[serde(rename = "price_usd", serialize_with = "rust_decimal::serde::str_option::serialize", deserialize_with = "deserialize_rust_decimal_from_anything_option")]
+	price_usd: Option<Decimal>,
 
 	#[serde(serialize_with = "rust_decimal::serde::str::serialize", deserialize_with = "rust_decimal::serde::float::deserialize")]
 	timestamp: Decimal,
@@ -54,7 +55,7 @@ impl CachedPrice {
 	}
 
 	#[must_use]
-	pub const fn get_price_usd(&self) -> Decimal {
+	pub const fn get_price_usd(&self) -> Option<Decimal> {
 		self.price_usd
 	}
 
