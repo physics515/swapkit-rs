@@ -1,6 +1,7 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use crate::utils::deserialize_rust_decimal_from_anything_option;
+use crate::deserialize_rust_decimal_from_anything_option_default;
 
 /*
 {
@@ -39,7 +40,7 @@ impl GasPrice {
 	}
 
 	#[must_use]
-	pub const fn get_gas(&self) -> &Decimal {
+	pub const fn get_gas(&self) -> &Option<Decimal> {
 		&self.gas
 	}
 
@@ -49,7 +50,7 @@ impl GasPrice {
 	}
 
 	#[must_use]
-	pub const fn get_gas_asset(&self) -> &Decimal {
+	pub const fn get_gas_asset(&self) -> &Option<Decimal> {
 		&self.gas_asset
 	}
 }
