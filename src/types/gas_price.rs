@@ -1,7 +1,6 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use crate::utils::deserialize_rust_decimal_from_anything_option;
-use crate::deserialize_rust_decimal_from_anything_option_default;
+
 
 /*
 {
@@ -18,14 +17,14 @@ pub struct GasPrice {
 	asset: String,
 	units: String,
 
-	#[serde(serialize_with = "rust_decimal::serde::str_option::serialize", deserialize_with = "deserialize_rust_decimal_from_anything_option", default = "deserialize_rust_decimal_from_anything_option_default")]
-	gas: Option<Decimal>,
+	#[serde(with = "rust_decimal::serde::str")]
+	gas: Decimal,
 
 	#[serde(rename = "chainId")]
 	chain_id: String,
 
-	#[serde(serialize_with = "rust_decimal::serde::str_option::serialize", deserialize_with = "deserialize_rust_decimal_from_anything_option", default = "deserialize_rust_decimal_from_anything_option_default")]
-	gas_asset: Option<Decimal>,
+	#[serde(with = "rust_decimal::serde::str")]
+	gas_asset: Decimal,
 }
 
 impl GasPrice {
@@ -40,7 +39,7 @@ impl GasPrice {
 	}
 
 	#[must_use]
-	pub const fn get_gas(&self) -> &Option<Decimal> {
+	pub const fn get_gas(&self) -> &Decimal {
 		&self.gas
 	}
 
@@ -50,7 +49,7 @@ impl GasPrice {
 	}
 
 	#[must_use]
-	pub const fn get_gas_asset(&self) -> &Option<Decimal> {
+	pub const fn get_gas_asset(&self) -> &Decimal {
 		&self.gas_asset
 	}
 }
