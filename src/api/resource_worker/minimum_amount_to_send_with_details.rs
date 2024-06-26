@@ -25,7 +25,7 @@ pub async fn api_get_minimum_amount_to_send_with_details(base_url: &str, headers
 
 	let minimum_amount_to_send_with_details: MinimumAmountToSendWithDetails = match serde_json::from_str(&response) {
 		Ok(minimum_amount_to_send_with_details) => minimum_amount_to_send_with_details,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(minimum_amount_to_send_with_details)

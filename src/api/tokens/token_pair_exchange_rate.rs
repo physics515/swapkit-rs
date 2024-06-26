@@ -25,7 +25,7 @@ pub async fn api_get_token_pair_exchange_rate(base_url: &str, headers: HeaderMap
 
 	let exchange_rate: ExchangeRate = match serde_json::from_str(&response) {
 		Ok(exchange_rate) => exchange_rate,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(exchange_rate)

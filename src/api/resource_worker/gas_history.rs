@@ -25,7 +25,7 @@ pub async fn api_get_gas_history(base_url: &str, headers: HeaderMap, chain_id: &
 
 	let gas_history: GasHistory = match serde_json::from_str(&response) {
 		Ok(gas_history) => gas_history,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(gas_history)

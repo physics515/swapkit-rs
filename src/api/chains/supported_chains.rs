@@ -25,7 +25,7 @@ pub async fn api_get_supported_chains(base_url: &str, headers: HeaderMap) -> Res
 
 	let supported_chains: SupportedChains = match serde_json::from_str(&response) {
 		Ok(supported_chains) => supported_chains,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(error) => bail!(APIError::SerdeError { error, attempt: response }),
 	};
 
 	Ok(supported_chains)

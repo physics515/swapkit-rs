@@ -9,8 +9,11 @@ pub enum APIError {
 	#[error("URL Parsing Error: {0}")]
 	UrlParsingError(#[from] ParseError),
 
-	#[error("Serde Error: {0}")]
-	SerdeError(#[from] serde_json::Error),
+	#[error("Serde Error: {error} while attempting to {attempt}")]
+	SerdeError {
+                error: serde_json::Error,
+                attempt: String,
+        },
 
 	#[error("Invalid Parameter: {0}")]
 	InvalidParameter(String),

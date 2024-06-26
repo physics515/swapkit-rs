@@ -50,7 +50,7 @@ pub async fn api_get_request_a_swap_quote(base_url: &str, headers: HeaderMap, pa
 
 	let response: Quote = match serde_json::from_str(&response) {
 		Ok(response) => response,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(response)

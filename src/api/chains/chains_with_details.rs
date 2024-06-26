@@ -25,7 +25,7 @@ pub async fn api_get_chains_with_details(base_url: &str, headers: HeaderMap) -> 
 
 	let chains_with_details: ChainsWithDetails = match serde_json::from_str(&response) {
 		Ok(chains_with_details) => chains_with_details,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(chains_with_details)

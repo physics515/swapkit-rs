@@ -25,7 +25,7 @@ pub async fn api_get_supported_providers(base_url: &str, headers: HeaderMap) -> 
 
 	let supported_providers: SupportedProviders = match serde_json::from_str(&response) {
 		Ok(supported_providers) => supported_providers,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(supported_providers)

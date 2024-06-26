@@ -25,7 +25,7 @@ pub async fn api_get_available_lending_assets(base_url: &str, headers: HeaderMap
 
 	let response: Vec<LendingAsset> = match serde_json::from_str(&response) {
 		Ok(response) => response,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(response)

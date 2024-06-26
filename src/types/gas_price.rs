@@ -18,13 +18,13 @@ pub struct GasPrice {
 	asset: String,
 	units: String,
 
-	#[serde(serialize_with = "rust_decimal::serde::str::serialize", deserialize_with = "deserialize_rust_decimal_from_anything")]
+	#[serde( serialize_with = "rust_decimal::serde::str::serialize", deserialize_with = "deserialize_rust_decimal_from_anything")]
 	gas: Decimal,
 
 	#[serde(rename = "chainId")]
 	chain_id: String,
 
-	#[serde(serialize_with = "rust_decimal::serde::str::serialize", deserialize_with = "deserialize_rust_decimal_from_anything")]
+	#[serde(rename = "gasAsset", serialize_with = "rust_decimal::serde::str::serialize", deserialize_with = "deserialize_rust_decimal_from_anything")]
 	gas_asset: Decimal,
 }
 

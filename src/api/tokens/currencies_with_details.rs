@@ -25,7 +25,7 @@ pub async fn api_get_currencies_with_details(base_url: &str, headers: HeaderMap)
 
 	let currencies_with_details: CurrenciesWithDetails = match serde_json::from_str(&response) {
 		Ok(currencies_with_details) => currencies_with_details,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(currencies_with_details)

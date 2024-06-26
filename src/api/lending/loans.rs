@@ -25,7 +25,7 @@ pub async fn api_get_loans(base_url: &str, headers: HeaderMap, address: &str, as
 
 	let loan: Loan = match serde_json::from_str(&response) {
 		Ok(loan) => loan,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(loan)

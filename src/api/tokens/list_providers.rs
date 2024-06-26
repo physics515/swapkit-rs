@@ -25,7 +25,7 @@ pub async fn api_get_token_providers(base_url: &str, headers: HeaderMap) -> Resu
 
 	let providers: Vec<Provider> = match serde_json::from_str(&response) {
 		Ok(providers) => providers,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(providers)

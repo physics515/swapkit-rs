@@ -35,7 +35,7 @@ pub async fn api_get_cached_prices(base_url: &str, mut headers: HeaderMap, param
 
 	let response: Vec<CachedPrice> = match serde_json::from_str(&response) {
 		Ok(response) => response,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(response)

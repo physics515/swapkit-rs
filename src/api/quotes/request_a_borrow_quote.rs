@@ -33,7 +33,7 @@ pub async fn api_get_request_a_borrow_quote(base_url: &str, headers: HeaderMap, 
 	let Ok(response) = serde_json::from_str::<BorrowQuote>(&response) else {
 		let res: serde_json::Value = match serde_json::from_str(&response) {
 			Ok(res) => res,
-			Err(e) => bail!(APIError::SerdeError(e)),
+			Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 		};
 		let Some(error) = res.get("message") else { bail!(APIError::ClientError("No error message in response".to_string())) };
 		bail!(APIError::ClientError(error.to_string()))

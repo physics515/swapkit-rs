@@ -25,7 +25,7 @@ pub async fn api_get_gas_rates(base_url: &str, headers: HeaderMap) -> Result<Vec
 
 	let gas_rates: Vec<GasPrice> = match serde_json::from_str(&response) {
 		Ok(gas_rates) => gas_rates,
-		Err(e) => bail!(APIError::SerdeError(e)),
+		Err(e) => bail!(APIError::SerdeError{error: e, attempt: response}),
 	};
 
 	Ok(gas_rates)
