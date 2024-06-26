@@ -1,5 +1,6 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
+use crate::deserialize_rust_decimal_from_anything;
 
 
 /*
@@ -17,13 +18,13 @@ pub struct GasPrice {
 	asset: String,
 	units: String,
 
-	#[serde(with = "rust_decimal::serde::str")]
+	#[serde(serialize_with = "rust_decimal::serde::str::serialize", deserialize_with = "deserialize_rust_decimal_from_anything")]
 	gas: Decimal,
 
 	#[serde(rename = "chainId")]
 	chain_id: String,
 
-	#[serde(with = "rust_decimal::serde::str")]
+	#[serde(serialize_with = "rust_decimal::serde::str::serialize", deserialize_with = "deserialize_rust_decimal_from_anything")]
 	gas_asset: Decimal,
 }
 
