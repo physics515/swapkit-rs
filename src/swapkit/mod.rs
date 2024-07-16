@@ -75,7 +75,7 @@ mod tests {
 	async fn test_all_endpoints() {
 		let mut swapkit = get_test_swapkit();
 
- 		// chains
+  		// chains
 		let supported_chains = swapkit.get_supported_chains().await.unwrap();
 		println!("{}", json!(supported_chains));
 		assert_ne!(supported_chains.get_chains().len(), 0);
@@ -165,9 +165,9 @@ mod tests {
 		println!("{}", json!(exchange_rate).to_string());
 		assert_ne!(exchange_rate.get_price(), &rust_decimal::Decimal::ZERO);
 
-		let cached_prices = swapkit.get_cached_prices(vec!["ETH.unshETH-0x0Ae38f7E10A43B5b2fB064B42a2f4514cbA909ef".to_string(), "BSC.DOT-0X7083609FCE4D1D8DC0C979AAB8C869EA2C873402".to_string(), "BTC.BTC".to_string(), "ETH.ARB-0XB50721BCF8D664C30412CFBC6CF7A15145234AD1".to_string()], Some(true), Some(true), Some(true)).await.unwrap();
+		let cached_prices = swapkit.get_cached_prices(vec!["ETH.unshETH-0x0Ae38f7E10A43B5b2fB064B42a2f4514cbA909ef".to_string(), "BSC.DOT-0X7083609FCE4D1D8DC0C979AAB8C869EA2C873402".to_string(), "BTC.BTC".to_string(), "ETH.ARB-0XB50721BCF8D664C30412CFBC6CF7A15145234AD1".to_string(), "AVAX.EURC-0xC891EB4cbdEFf6e073e859e987815Ed1505c2ACD".to_string()], Some(true), Some(true), Some(true)).await.unwrap();
 		println!("{}", json!(cached_prices).to_string());
-		assert_eq!(cached_prices.len(), 4);
+		assert_eq!(cached_prices.len(), 5);
 
  		let providers = swapkit.get_token_providers().await.unwrap();
 		println!("{}", json!(providers).to_string());
