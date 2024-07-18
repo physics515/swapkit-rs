@@ -107,7 +107,7 @@ pub struct RepayQuote {
 
 impl RepayQuote {
 	#[must_use]
-	pub const fn get_inbound_address(&self) -> &str {
+	pub fn get_inbound_address(&self) -> &str {
 		&self.inbound_address
 	}
 
@@ -142,47 +142,47 @@ impl RepayQuote {
 	}
 
 	#[must_use]
-	pub const fn get_warning(&self) -> &str {
+	pub fn get_warning(&self) -> &str {
 		&self.warning
 	}
 
 	#[must_use]
-	pub const fn get_notes(&self) -> &str {
+	pub fn get_notes(&self) -> &str {
 		&self.notes
 	}
 
 	#[must_use]
-	pub const fn get_dust_threshold(&self) -> &str {
+	pub fn get_dust_threshold(&self) -> &str {
 		&self.dust_threshold
 	}
 
 	#[must_use]
-	pub const fn get_recommended_min_amount_in(&self) -> &str {
+	pub fn get_recommended_min_amount_in(&self) -> &str {
 		&self.recommended_min_amount_in
 	}
 
 	#[must_use]
-	pub const fn get_memo(&self) -> &str {
+	pub fn get_memo(&self) -> &str {
 		&self.memo
 	}
 
 	#[must_use]
-	pub const fn get_expected_amount_out(&self) -> &str {
+	pub fn get_expected_amount_out(&self) -> &str {
 		&self.expected_amount_out
 	}
 
 	#[must_use]
-	pub const fn get_expected_amount_in(&self) -> &str {
+	pub fn get_expected_amount_in(&self) -> &str {
 		&self.expected_amount_in
 	}
 
 	#[must_use]
-	pub const fn get_expected_collateral_withdrawn(&self) -> &str {
+	pub fn get_expected_collateral_withdrawn(&self) -> &str {
 		&self.expected_collateral_withdrawn
 	}
 
 	#[must_use]
-	pub const fn get_expected_debt_repaid(&self) -> &str {
+	pub fn get_expected_debt_repaid(&self) -> &str {
 		&self.expected_debt_repaid
 	}
 
@@ -202,17 +202,17 @@ impl RepayQuote {
 	}
 
 	#[must_use]
-	pub const fn get_collateral_current(&self) -> &str {
+	pub fn get_collateral_current(&self) -> &str {
 		&self.collateral_current
 	}
 
 	#[must_use]
-	pub const fn get_repay_asset_amount(&self) -> &str {
+	pub fn get_repay_asset_amount(&self) -> &str {
 		&self.repay_asset_amount
 	}
 
 	#[must_use]
-	pub const fn get_repay_asset_amount_usd(&self) -> &str {
+	pub fn get_repay_asset_amount_usd(&self) -> &str {
 		&self.repay_asset_amount_usd
 	}
 

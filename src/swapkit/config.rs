@@ -36,17 +36,17 @@ impl Configuration {
 	}
 
 	#[must_use]
-	pub const fn get_referer(&self) -> &str {
+	pub fn get_referer(&self) -> &str {
 		&self.referer
 	}
 
 	#[must_use]
-	pub const fn get_x_api_key(&self) -> &str {
+	pub fn get_x_api_key(&self) -> &str {
 		&self.x_api_key
 	}
 
 	#[must_use]
-	pub const fn get_referrer(&self) -> &str {
+	pub fn get_referrer(&self) -> &str {
 		&self.referrer
 	}
 

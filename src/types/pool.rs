@@ -114,7 +114,7 @@ impl Pool {
 	}
 
 	#[must_use]
-	pub const fn get_status(&self) -> &str {
+	pub fn get_status(&self) -> &str {
 		&self.status
 	}
 

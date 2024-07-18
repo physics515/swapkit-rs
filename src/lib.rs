@@ -1,6 +1,6 @@
 #![warn(clippy::pedantic, clippy::nursery, clippy::all, clippy::cargo)]
 #![allow(clippy::multiple_crate_versions)]
-#![feature(const_trait_impl, effects)]
+#![feature(const_trait_impl)]
 
 //! # `SwapKit`
 //! Swapkit’s SDK gives developers API access to a powerful suite of non-custodial, permissionless `DeFi` tools to interact with 5,500+ crypto assets across 14+ blockchains including Bitcoin, Ethereum, BNB Chain via `THORChain`, Chainflip and Maya Protocol.

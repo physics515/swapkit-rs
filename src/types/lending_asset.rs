@@ -45,7 +45,7 @@ pub struct LendingAsset {
 
 impl LendingAsset {
 	#[must_use]
-	pub const fn get_asset(&self) -> &str {
+	pub fn get_asset(&self) -> &str {
 		&self.asset
 	}
 

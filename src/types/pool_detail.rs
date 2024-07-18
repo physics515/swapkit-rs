@@ -82,7 +82,7 @@ impl PoolDetail {
 	}
 
 	#[must_use]
-	pub const fn get_asset(&self) -> &str {
+	pub fn get_asset(&self) -> &str {
 		&self.asset
 	}
 
@@ -137,7 +137,7 @@ impl PoolDetail {
 	}
 
 	#[must_use]
-	pub const fn get_status(&self) -> &str {
+	pub fn get_status(&self) -> &str {
 		&self.status
 	}
 

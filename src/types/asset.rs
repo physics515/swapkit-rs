@@ -35,32 +35,32 @@ pub struct Asset {
 
 impl Asset {
 	#[must_use]
-	pub const fn get_chain(&self) -> &str {
+	pub fn get_chain(&self) -> &str {
 		&self.chain
 	}
 
 	#[must_use]
-	pub const fn get_symbol(&self) -> &str {
+	pub fn get_symbol(&self) -> &str {
 		&self.symbol
 	}
 
 	#[must_use]
-	pub const fn get_ticker(&self) -> &str {
+	pub fn get_ticker(&self) -> &str {
 		&self.ticker
 	}
 
 	#[must_use]
-	pub const fn get_asset_type(&self) -> &str {
+	pub fn get_asset_type(&self) -> &str {
 		&self.asset_type
 	}
 
 	#[must_use]
-	pub const fn get_network(&self) -> &str {
+	pub fn get_network(&self) -> &str {
 		&self.network
 	}
 
 	#[must_use]
-	pub const fn get_name(&self) -> &str {
+	pub fn get_name(&self) -> &str {
 		&self.name
 	}
 

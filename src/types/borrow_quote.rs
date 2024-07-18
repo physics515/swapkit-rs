@@ -192,12 +192,12 @@ impl BorrowQuote {
 	}
 
 	#[must_use]
-	pub const fn get_warning(&self) -> &str {
+	pub fn get_warning(&self) -> &str {
 		&self.warning
 	}
 
 	#[must_use]
-	pub const fn get_notes(&self) -> &str {
+	pub fn get_notes(&self) -> &str {
 		&self.notes
 	}
 
@@ -207,7 +207,7 @@ impl BorrowQuote {
 	}
 
 	#[must_use]
-	pub const fn get_memo(&self) -> &str {
+	pub fn get_memo(&self) -> &str {
 		&self.memo
 	}
 
@@ -312,22 +312,22 @@ impl BorrowQuote {
 	}
 
 	#[must_use]
-	pub const fn get_target_address(&self) -> &str {
+	pub fn get_target_address(&self) -> &str {
 		&self.target_address
 	}
 
 	#[must_use]
-	pub const fn get_recipient_address(&self) -> &str {
+	pub fn get_recipient_address(&self) -> &str {
 		&self.recipient_address
 	}
 
 	#[must_use]
-	pub const fn get_asset_in(&self) -> &str {
+	pub fn get_asset_in(&self) -> &str {
 		&self.asset_in
 	}
 
 	#[must_use]
-	pub const fn get_asset_out(&self) -> &str {
+	pub fn get_asset_out(&self) -> &str {
 		&self.asset_out
 	}
 
