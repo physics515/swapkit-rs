@@ -51,7 +51,7 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_request_a_swap_quote(self.get_config().get_base_url(), self.get_headers(), parameters).await
+		api_get_request_a_swap_quote(self.get_config().get_base_url(), self.get_headers()?, parameters).await
 	}
 
 	/// Retrieve a quote for a borrow.
@@ -131,7 +131,7 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_request_a_borrow_quote(self.get_config().get_base_url(), self.get_headers(), parameters).await
+		api_get_request_a_borrow_quote(self.get_config().get_base_url(), self.get_headers()?, parameters).await
 	}
 
 	/// Retrieve a quote for a repay.
@@ -200,6 +200,6 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_request_a_repay_quote(self.get_config().get_base_url(), self.get_headers(), parameters).await
+		api_get_request_a_repay_quote(self.get_config().get_base_url(), self.get_headers()?, parameters).await
 	}
 }

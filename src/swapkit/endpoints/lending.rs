@@ -12,7 +12,7 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_available_assets_for_pool(self.get_config().get_base_url(), self.get_headers(), asset).await
+		api_get_available_assets_for_pool(self.get_config().get_base_url(), self.get_headers()?, asset).await
 	}
 
 	/// Retrieve a list of all the lending assets the API supports.
@@ -58,7 +58,7 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_available_lending_assets(self.get_config().get_base_url(), self.get_headers()).await
+		api_get_available_lending_assets(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 
 	/// Retrieve a loan for a given address and asset.
@@ -105,6 +105,6 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_loans(self.get_config().get_base_url(), self.get_headers(), address, asset).await
+		api_get_loans(self.get_config().get_base_url(), self.get_headers()?, address, asset).await
 	}
 }

@@ -38,6 +38,6 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_supported_providers(self.get_config().get_base_url(), self.get_headers()).await
+		api_get_supported_providers(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 }

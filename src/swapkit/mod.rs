@@ -4,6 +4,8 @@ pub use config::*;
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::{Deserialize, Serialize};
 
+use crate::APIError;
+
 mod config;
 mod endpoints;
 
@@ -19,12 +21,21 @@ impl Swapkit {
 		Self { config, last_call: Utc::now() }
 	}
 
-	fn get_headers(&self) -> HeaderMap {
+	/// Builds the header map that every request carries.
+	///
+	/// # Errors
+	/// Returns [`APIError::InvalidHeaderValue`] when the configured referer, API key or referrer
+	/// contains a byte that is not legal in an HTTP header value — anything outside visible ASCII
+	/// plus space and tab. A stray newline in a `.env` file is the usual cause.
+	fn get_headers(&self) -> Result<HeaderMap, APIError> {
 		let mut headers = HeaderMap::new();
-		headers.insert("Referer", HeaderValue::from_str(self.config.get_referer()).unwrap());
-		headers.insert("X-API-KEY", HeaderValue::from_str(self.config.get_x_api_key()).unwrap());
-		headers.insert("referrer", HeaderValue::from_str(self.config.get_referrer()).unwrap());
-		headers
+
+		for (name, value) in [("Referer", self.config.get_referer()), ("X-API-KEY", self.config.get_x_api_key()), ("referrer", self.config.get_referrer())] {
+			let value = HeaderValue::from_str(value).map_err(|source| APIError::InvalidHeaderValue { header: name, source })?;
+			headers.insert(name, value);
+		}
+
+		Ok(headers)
 	}
 
 	#[must_use]

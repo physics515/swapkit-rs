@@ -117,9 +117,12 @@ investing in any endpoint-level work — it decides whether later phases are rep
       "add support for dev api" commit (`ec47449`) never actually shipped a user-visible capability.
       Either finish it (a way to choose the dev base, plumbed into the request path) or remove the
       field.
-- [ ] **`get_headers()` can panic on user input.** `HeaderValue::from_str(...).unwrap()`
-      (`src/swapkit/mod.rs:24-26`) panics on any API key or referer containing a non-visible-ASCII
-      byte. A library should return the error, never panic on a caller's string.
+- [x] **`get_headers()` can panic on user input.** Fixed 2026-09-24. `get_headers` now returns
+      `Result<HeaderMap, APIError>` and each of the three headers is built with
+      `HeaderValue::from_str(..).map_err(..)?`, surfacing the new
+      `APIError::InvalidHeaderValue { header, source }` variant instead of panicking. All 18 call
+      sites in `src/swapkit/endpoints/` propagate it with `?`. A trailing newline in a `.env` API key
+      used to abort the process; it now returns an error naming which header was bad.
 - [ ] **Every `# Errors` doc section says `todo`.** They exist only to quiet
       `clippy::missing_errors_doc` and tell a consumer nothing. Document what each method actually
       returns on failure, at least for the endpoints that are known-good.

@@ -12,6 +12,6 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_transation_details(self.get_config().get_base_url(), self.get_headers(), tx_hash).await
+		api_get_transation_details(self.get_config().get_base_url(), self.get_headers()?, tx_hash).await
 	}
 }

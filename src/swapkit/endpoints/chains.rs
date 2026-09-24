@@ -47,7 +47,7 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_supported_chains(self.get_config().get_base_url(), self.get_headers()).await
+		api_get_supported_chains(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 
 	/// Retrieve a list of all the chains the API supports with details.
@@ -105,6 +105,6 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_chains_with_details(self.get_config().get_base_url(), self.get_headers()).await
+		api_get_chains_with_details(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 }

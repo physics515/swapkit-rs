@@ -55,7 +55,7 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_currencies_with_details(self.get_config().get_base_url(), self.get_headers()).await
+		api_get_currencies_with_details(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 
 	/// Retrieve the exchange rate between two tokens.
@@ -97,7 +97,7 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_token_pair_exchange_rate(self.get_config().get_base_url(), self.get_headers(), provider, buy_asset, sell_asset).await
+		api_get_token_pair_exchange_rate(self.get_config().get_base_url(), self.get_headers()?, provider, buy_asset, sell_asset).await
 	}
 
 	/// Retrieve the cached prices for a list of tokens.
@@ -158,7 +158,7 @@ impl Swapkit {
 		let parameters = CachedPricesParameters { tokens, metadata, lookup, sparkline };
 
 		self.set_last_call(Utc::now());
-		api_get_cached_prices(self.get_config().get_base_url(), self.get_headers(), parameters).await
+		api_get_cached_prices(self.get_config().get_base_url(), self.get_headers()?, parameters).await
 	}
 
 	/// Retrieve a list of all the token providers the API supports.
@@ -203,6 +203,6 @@ impl Swapkit {
 		self.sleep_until_ok_to_call().await;
 
 		self.set_last_call(Utc::now());
-		api_get_token_providers(self.get_config().get_base_url(), self.get_headers()).await
+		api_get_token_providers(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 }
