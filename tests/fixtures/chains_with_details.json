@@ -1,0 +1,33 @@
+[
+	{
+		"chain": "AVAX",
+		"chainId": 43114,
+		"displayName": "Avalanche",
+		"symbol": "AVAX",
+		"logo": "https://static.thorswap.net/token-list/images/avax.avax.png",
+		"providers": ["THORCHAIN", "PANGOLIN"],
+		"status": "active",
+		"category": "evm",
+		"evm": true,
+		"mainnet": true,
+		"defaultDecimals": 18,
+		"averageBlockTime": 3000,
+		"confirmationsRequired": 1,
+		"gasRate": null,
+		"gasAsset": {
+			"chain": "AVAX",
+			"symbol": "AVAX",
+			"identifier": "AVAX.AVAX",
+			"decimals": 18
+		}
+	},
+	{
+		"chain": "BTC",
+		"chainId": "bitcoin",
+		"status": "active",
+		"evm": false,
+		"mainnet": true,
+		"averageBlockTime": 600000,
+		"gasRate": null
+	}
+]

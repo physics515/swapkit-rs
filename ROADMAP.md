@@ -176,6 +176,11 @@ investing in any endpoint-level work — it decides whether later phases are rep
 
 ## Phase 2 — Correctness of the public surface
 
+- [ ] **Audit every public type for missing accessors.** `Provider` and `ProviderVersion` were
+      returned from `get_token_providers` as public types with **every field private and not one
+      getter** — a consumer could deserialize them and then read nothing out of them. Getters were
+      added 2026-09-24; the same audit has not been done for the other ~60 types in `src/types/`.
+
 - [x] **`dev_base_url` is dead.** Resolved 2026-09-24 by shipping the capability `ec47449` intended,
       with less state: the unreadable private field is gone, and the two URLs are now public
       constants `DEFAULT_BASE_URL` and `DEV_BASE_URL` in `src/swapkit/config.rs`, selectable through
@@ -237,10 +242,13 @@ the code was right; a red one could be any of the three.
 
 - [ ] **Capture JSON fixtures** for each endpoint's real response and add deserialization tests over
       them, so type drift is caught without a network call or a secret. **First slice landed
-      2026-09-24** — `tests/deserialization.rs` with `tests/fixtures/{gas_prices,
-      gas_prices_edge_cases,supported_chains,cached_prices}.json`, 4 tests, all offline and
-      credential-free. Still `[ ]`: the other ~14 endpoints have no fixture. **Next slice:** quotes
-      (`Quote`, `QuoteRoute`) and `ChainsWithDetails`, which are the largest and most nested types.
+      2026-09-24**, **second slice the same run** — `tests/deserialization.rs` now has **9 tests**
+      over `tests/fixtures/{gas_prices,gas_prices_edge_cases,supported_chains,cached_prices,
+      chains_with_details,gas_history,providers,supported_providers,exchange_rate}.json`, all
+      offline and credential-free. Still `[ ]`: **`Quote` / `QuoteRoute` and
+      `MinimumAmountToSendWithDetails` / `Loan` / `LendingAsset` have no fixture.** **Next slice:**
+      `Quote`, which is by far the largest and most nested type in the crate and the one a swap
+      consumer actually depends on.
 - [x] **Add a fixture test per type that upstream has already broken once.** Done 2026-09-24 for the
       two the git history keeps repairing. `gas_prices_edge_cases.json` pins the whole contract of
       `deserialize_rust_decimal_from_anything` — number, numeric string, `null`, `""`, `"NULL"`,
