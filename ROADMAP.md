@@ -156,11 +156,12 @@ investing in any endpoint-level work — it decides whether later phases are rep
       `get_transaction_details`, matching what `README.md` and `src/lib.rs` always advertised. The
       internal `api_get_transation_details` was renamed alongside it. **Breaking** for anyone who
       called the misspelled name — 0.0.x permits it, and it is called out in the release notes.
-- [ ] **Fix the remaining endpoint names in the docs.** `README.md` and the mirrored crate docs in
-      `src/lib.rs` advertise `get_chains`, but the method is `get_supported_chains`. A consumer
-      copying the README does not compile.
-- [ ] **Fix the crate-doc typos** in `src/lib.rs`: the stray `9++` on the `get_chains` line and
-      "fully typeed". They are the first thing a docs.rs visitor reads.
+- [x] **Fix the remaining endpoint names in the docs.** Done 2026-09-24. Both `README.md` and the
+      crate docs in `src/lib.rs` now list the real method names, checked against
+      `grep 'pub async fn' src/swapkit/endpoints/*.rs` — all 18 match. The `no_run` doctests are a
+      standing guard against this drift returning.
+- [x] **Fix the crate-doc typos** in `src/lib.rs`: the stray `9++` and "fully typeed" are both gone
+      (2026-09-24), in `README.md` too.
 - [x] **Re-check the two endpoints documented as broken.** Answered 2026-09-24: **they are gone,
       along with the entire host.** Every probed `api.thorswap.net` path returns HTTP 404 (see
       Phase 1), so `get_available_assets_for_pool` and `get_transaction_details` are not
