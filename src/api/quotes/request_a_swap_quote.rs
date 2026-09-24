@@ -15,20 +15,20 @@ pub async fn api_get_request_a_swap_quote(base_url: &str, headers: HeaderMap, pa
 
 	let mut params = vec![("sellAsset", parameters.sell_asset), ("buyAsset", parameters.buy_asset), ("sellAmount", parameters.sell_amount), ("senderAddress", parameters.sender_address), ("recipientAddress", parameters.recipient_address)];
 
-	if parameters.affiliate_address.is_some() {
-		params.push(("affiliateAddress", parameters.affiliate_address.unwrap()));
+	if let Some(affiliate_address) = parameters.affiliate_address {
+		params.push(("affiliateAddress", affiliate_address));
 	}
 
-	if parameters.affiliate_basis_points.is_some() {
-		params.push(("affiliateBasisPoints", parameters.affiliate_basis_points.unwrap()));
+	if let Some(affiliate_basis_points) = parameters.affiliate_basis_points {
+		params.push(("affiliateBasisPoints", affiliate_basis_points));
 	}
 
-	if parameters.is_affiliate_fee_flat.is_some() {
-		params.push(("isAffiliateFeeFlat", parameters.is_affiliate_fee_flat.unwrap().to_string()));
+	if let Some(is_affiliate_fee_flat) = parameters.is_affiliate_fee_flat {
+		params.push(("isAffiliateFeeFlat", is_affiliate_fee_flat.to_string()));
 	}
 
-	if parameters.slippage.is_some() {
-		params.push(("slippage", parameters.slippage.unwrap()));
+	if let Some(slippage) = parameters.slippage {
+		params.push(("slippage", slippage));
 	}
 
 	let endpoint = match reqwest::Url::parse_with_params(&endpoint, &params) {

@@ -52,15 +52,15 @@ impl Swapkit {
 		&self.last_call
 	}
 
-	pub fn set_last_call(&mut self, last_call: DateTime<Utc>) {
+	pub const fn set_last_call(&mut self, last_call: DateTime<Utc>) {
 		self.last_call = last_call;
 	}
 
 	/// Returns a future timestamp of when it is ok to call the Swapkit API again
 	fn ok_to_call_at(&self) -> DateTime<Utc> {
-		let rate_limit: i64 = i64::try_from(self.config.get_rate_limit_ms()).map_or(1000, |rate_limit| rate_limit);
-		let rate_limit = Duration::try_milliseconds(rate_limit).map_or_else(Duration::zero, |rate_limit| rate_limit);
-		self.last_call.checked_add_signed(rate_limit).map_or_else(Utc::now, |res| res)
+		let rate_limit: i64 = i64::try_from(self.config.get_rate_limit_ms()).unwrap_or(1000);
+		let rate_limit = Duration::try_milliseconds(rate_limit).unwrap_or_else(Duration::zero);
+		self.last_call.checked_add_signed(rate_limit).unwrap_or_else(Utc::now)
 	}
 
 	/// Sleeps until it is ok to call the Swapkit API again
@@ -95,14 +95,14 @@ mod tests {
 	async fn supported_chains() {
 		skip_without_credentials!(swapkit);
 		let supported_chains = swapkit.get_supported_chains().await.unwrap();
-		assert!(!supported_chains.get_chains().is_empty());
+		assert_ne!(supported_chains.get_chains().len(), 0);
 	}
 
 	#[tokio::test]
 	async fn chains_with_details() {
 		skip_without_credentials!(swapkit);
 		let chains_with_details = swapkit.get_chains_with_details().await.unwrap();
-		assert!(!chains_with_details.get_chains().is_empty());
+		assert_ne!(chains_with_details.get_chains().len(), 0);
 	}
 
 	#[tokio::test]
@@ -111,7 +111,7 @@ mod tests {
 		let gas_prices = swapkit.get_gas_prices().await.unwrap();
 		// Deliberately not an exact count: the number of chains is upstream's business, and
 		// asserting it made this test fail whenever a chain was added or removed.
-		assert!(!gas_prices.get_gas_prices().is_empty());
+		assert_ne!(gas_prices.get_gas_prices().len(), 0);
 	}
 
 	#[tokio::test]
@@ -124,7 +124,7 @@ mod tests {
 	async fn available_lending_assets() {
 		skip_without_credentials!(swapkit);
 		let lending_assets = swapkit.get_available_lending_assets().await.unwrap();
-		assert!(!lending_assets.is_empty());
+		assert_ne!(lending_assets.len(), 0);
 	}
 
 	#[tokio::test]
@@ -138,7 +138,7 @@ mod tests {
 	async fn supported_providers() {
 		skip_without_credentials!(swapkit);
 		let supported_providers = swapkit.get_supported_providers().await.unwrap();
-		assert!(!supported_providers.get_providers().is_empty());
+		assert_ne!(supported_providers.get_providers().len(), 0);
 	}
 
 	#[tokio::test]
@@ -156,7 +156,7 @@ mod tests {
 			slippage: None,
 		};
 		let quote = swapkit.get_request_a_swap_quote(parameters).await.unwrap();
-		assert!(!quote.get_quote_id().is_empty());
+		assert_ne!(quote.get_quote_id().len(), 0);
 	}
 
 	#[tokio::test]
@@ -206,7 +206,7 @@ mod tests {
 	async fn gas_rates() {
 		skip_without_credentials!(swapkit);
 		let gas_rates = swapkit.get_gas_rates().await.unwrap();
-		assert!(!gas_rates.is_empty());
+		assert_ne!(gas_rates.len(), 0);
 	}
 
 	#[tokio::test]
@@ -214,7 +214,7 @@ mod tests {
 		skip_without_credentials!(swapkit);
 		let currencies_with_details = swapkit.get_currencies_with_details().await.unwrap();
 		// Deliberately not an exact count: the currency list is upstream's business.
-		assert!(!currencies_with_details.get_currencies().is_empty());
+		assert_ne!(currencies_with_details.get_currencies().len(), 0);
 	}
 
 	#[tokio::test]
@@ -237,7 +237,7 @@ mod tests {
 	async fn token_providers() {
 		skip_without_credentials!(swapkit);
 		let providers = swapkit.get_token_providers().await.unwrap();
-		assert!(!providers.is_empty());
+		assert_ne!(providers.len(), 0);
 	}
 
 	#[tokio::test]

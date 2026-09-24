@@ -68,7 +68,7 @@ impl Configuration {
 		self.base_url = base_url;
 	}
 
-	pub fn set_rate_limit_ms(&mut self, rate_limit_ms: u64) {
+	pub const fn set_rate_limit_ms(&mut self, rate_limit_ms: u64) {
 		self.rate_limit_ms = rate_limit_ms;
 	}
 

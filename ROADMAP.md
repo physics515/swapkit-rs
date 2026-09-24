@@ -84,13 +84,18 @@ Nothing downstream is trustworthy until this phase is clear.
       (RUSTSEC-2021-0141). `dotenvy` is the maintained fork, but the cleaner move is to drop the
       crate from the *doc examples* entirely and read `std::env::var` there, so the published docs
       stop advertising an unmaintained crate to consumers who copy them.
-- [ ] **Record the clippy baseline and drive it down.** Verified 2026-09-24: 47 warnings, none of
-      them errors — 16 from the lib (15 duplicates), 35 from the lib tests (clippy offers 23
-      auto-fixes via `cargo clippy --fix --lib -p swapkit-rs --tests`), plus the manifest's
-      unused-dependency warnings. The big clusters are `to_string_in_format_args` (×13, all in the
-      test's `println!`s), `struct_field_names` (×7) and four `unnecessary_unwrap`s on
-      `parameters.*` in the quote endpoints. These are cheap, verifiable-offline increments — good
-      filler when a harder item stalls, but never a substitute for phase-order work.
+- [x] **Record the clippy baseline and drive it down.** Baseline measured 2026-09-24 before any
+      change: **lib 16, lib test 35, manifest 3-4** unused-dependency warnings, zero errors. As of
+      the same day: **lib 7, lib test 7 (all duplicates of the lib's), manifest 0** — 51 down to 7
+      distinct, with no `#![allow(...)]` added anywhere. What went: the manifest warnings with the
+      unused dependencies; 13 `to_string_in_format_args` with the test `println!`s; 4
+      `unnecessary_unwrap` rewritten as `if let Some(..)` in `request_a_swap_quote`; 2
+      `missing_const_for_fn`; 3 `map_or_else`/`map_or` identity closures in `ok_to_call_at`.
+- [ ] **The last 7 clippy warnings are all `struct_field_names`-family**, on `Asset`, `Pool`,
+      `Provider`, `Quote`, `StreamingSwap` (×2) and `QuoteTimeEstimates` (`all fields have the same
+      postfix: ms`). Every one would mean renaming a public field whose name mirrors the upstream
+      JSON key. Decide deliberately: rename with `#[serde(rename)]` to keep the wire format, or
+      leave them and accept that the backlog floor is 7. **Do not** silence them with an `allow`.
 - [ ] **Declare an MSRV** in `Cargo.toml` once the crate builds on stable, so the toolchain contract
       is explicit rather than implied.
 
