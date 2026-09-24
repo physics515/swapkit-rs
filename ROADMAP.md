@@ -56,16 +56,20 @@ Nothing downstream is trustworthy until this phase is clear.
       stands (lib 16, lib test 33); it must still exit 0.
 - [ ] **Gate clippy on `-D warnings` once the backlog is zero.** The CI step deliberately does not,
       so the backlog cannot be mistaken for a green tree.
-- [ ] **Clear the 22 open Dependabot alerts on master** (6 high, 11 moderate, 5 low as of
-      2026-09-24 — `gh api repos/physics515/swapkit-rs/dependabot/alerts`). Every one is transitive
-      through a `Cargo.lock` pinned in 2024. **`openssl` alone accounts for 11 of them, 5 of those
-      high** (GHSA-xp3w-r5p5-63rr, GHSA-pqf5-4pqq-29f5, GHSA-hppc-g8h3-xhp3, GHSA-ghm9-cr32-g9qj,
-      GHSA-8c75-8mhr-p7r9), and it is only present because `reqwest` defaults to `native-tls`. The
-      rest are `rustls-webpki` (×4, one high), `ring`, `idna`, `bytes`, `time`, `tokio`, `rand` and
-      `serde_with`. A plain `cargo update` clears most; switching `reqwest` to
-      `default-features = false` + `rustls-tls` removes the whole `openssl` chain and the C
-      dependency with it, which also serves the 100%-Rust principle. Verify the build after either.
-
+- [ ] **Clear the remaining Dependabot alerts on master.** Was 22 open (6 high, 11 moderate, 5 low,
+      verified 2026-09-24 via `gh api repos/physics515/swapkit-rs/dependabot/alerts`), broken down
+      `openssl` ×11, `rustls-webpki` ×4, and one each of `bytes`, `idna`, `rand`, `ring`,
+      `serde_with`, `time`, `tokio`. **Expected to drop to ~9 once this branch merges:** the
+      `reqwest` switch to `rustls-tls` removes the entire `openssl` chain (11), and the dependency
+      prune removed `serde_with` and `time` from the graph. The rest need a `cargo update`, and that
+      is where it gets expensive — see the next item.
+- [ ] **A blanket `cargo update` costs the MSRV; do it surgically.** Measured 2026-09-24: a plain
+      `cargo update` on this lockfile pulls `rand_pcg 0.10.2` (needs `edition2024`, so Cargo 1.85+)
+      and then `encoding_rs 0.8.42` / the `icu_*` 2.3 family (**require rustc 1.88**), taking the
+      MSRV from 1.83 to 1.88 — a year of Rust releases in exchange for ~9 transitive alerts. The
+      update was **reverted** for that reason and only the `reqwest` feature change kept. Next time,
+      pin each alerted crate individually with `cargo update -p <crate> --precise <ver>` and re-probe
+      1.83 after each, rather than updating the world.
 - [x] **Tighten the dependency requirements in `Cargo.toml`.** Done 2026-09-24. The surviving 0.x
       requirements now name their real minor series — `reqwest = "0.12"`, `chrono = "0.4"`,
       `dotenv = "0.15"` (dev), `tokio-test = "0.4"` (dev) — so a breaking 0.x release can no longer

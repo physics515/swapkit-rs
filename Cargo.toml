@@ -12,7 +12,10 @@ repository = "https://github.com/physics515/swapkit-rs"
 
 [dependencies]
 serde = { version = "1", features = ["derive", "rc"] }
-reqwest = "0.12"
+# `default-features = false` drops `default-tls`, which is `native-tls` and therefore the whole
+# `openssl-sys` C chain — both an FFI dependency this crate does not want and the source of 11 of
+# the 22 Dependabot alerts on master. `rustls-tls` is the pure-Rust replacement.
+reqwest = { version = "0.12", default-features = false, features = ["charset", "http2", "rustls-tls"] }
 thiserror = "1"
 anyhow = "1"
 serde_json = "1"
