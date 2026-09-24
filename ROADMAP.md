@@ -47,10 +47,15 @@ Nothing downstream is trustworthy until this phase is clear.
       that drops `no_run` — or accept compile-checking as the contract and say so in the docs.
 - [x] **Add `/scratch` to `.gitignore`** (it previously listed only `/target` and `.env`), so routine
       scratch output can never be staged. Landed 2026-09-24.
-- [ ] **Add CI.** The repo has no `.github/` at all, so a PR has no checks. A workflow running
-      `cargo build`, `cargo clippy --all-targets` and `cargo +nightly fmt --check` on both stable and
-      nightly — with the network-dependent tests excluded — would make "merge when green" mean
-      something.
+- [x] **Add CI.** Done 2026-09-24: `.github/workflows/ci.yml`. A `build` matrix over **stable and
+      nightly** runs `cargo build --locked --all-targets`, `cargo clippy --locked --all-targets`,
+      `cargo test --locked --lib` and `cargo test --locked --doc`; a separate `fmt` job runs
+      `cargo +nightly fmt --all --check`. Every step is offline: the lib test skips with
+      "NOT RUN (no credentials)" and all doctests are `no_run`, so nothing calls the SwapKit API and
+      no secret is needed. Clippy is **not** gated on `-D warnings` while the inherited backlog
+      stands (lib 16, lib test 33); it must still exit 0.
+- [ ] **Gate clippy on `-D warnings` once the backlog is zero.** The CI step deliberately does not,
+      so the backlog cannot be mistaken for a green tree.
 - [ ] **Clear the 22 open Dependabot alerts on master** (6 high, 11 moderate, 5 low as of
       2026-09-24 — `gh api repos/physics515/swapkit-rs/dependabot/alerts`). Every one is transitive
       through a `Cargo.lock` pinned in 2024. **`openssl` alone accounts for 11 of them, 5 of those
