@@ -35,6 +35,16 @@ Nothing downstream is trustworthy until this phase is clear.
       `cargo build`, `cargo clippy --all-targets` and `cargo +nightly fmt --check` on both stable and
       nightly — with the network-dependent tests excluded — would make "merge when green" mean
       something.
+- [ ] **Clear the 22 open Dependabot alerts on master** (6 high, 11 moderate, 5 low as of
+      2026-09-24 — `gh api repos/physics515/swapkit-rs/dependabot/alerts`). Every one is transitive
+      through a `Cargo.lock` pinned in 2024. **`openssl` alone accounts for 11 of them, 5 of those
+      high** (GHSA-xp3w-r5p5-63rr, GHSA-pqf5-4pqq-29f5, GHSA-hppc-g8h3-xhp3, GHSA-ghm9-cr32-g9qj,
+      GHSA-8c75-8mhr-p7r9), and it is only present because `reqwest` defaults to `native-tls`. The
+      rest are `rustls-webpki` (×4, one high), `ring`, `idna`, `bytes`, `time`, `tokio`, `rand` and
+      `serde_with`. A plain `cargo update` clears most; switching `reqwest` to
+      `default-features = false` + `rustls-tls` removes the whole `openssl` chain and the C
+      dependency with it, which also serves the 100%-Rust principle. Verify the build after either.
+
 - [ ] **Tighten the dependency requirements in `Cargo.toml`.** `reqwest = "0"`, `chrono = "0"`,
       `rand = "0"`, `dotenv = "0"`, `serde_urlencoded = "0"` and `tokio-test = "0"` each resolve to
       "any 0.x", so a breaking 0.x release lands silently in a consumer's build. Pin the real minor
