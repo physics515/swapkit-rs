@@ -63,6 +63,10 @@ Nothing downstream is trustworthy until this phase is clear.
       `reqwest` switch to `rustls-tls` removes the entire `openssl` chain (11), and the dependency
       prune removed `serde_with` and `time` from the graph. The rest need a `cargo update`, and that
       is where it gets expensive — see the next item.
+- [ ] **Two locked crates are yanked on crates.io.** `cargo publish --locked --dry-run` warns that
+      `futures-util 0.3.30` and `spin 0.9.8` are yanked (observed 2026-09-24). It is a warning, not
+      an error — the publish succeeds — but both should be moved forward in the same surgical
+      `cargo update` pass as the Dependabot alerts above, and re-probed against 1.83.
 - [ ] **A blanket `cargo update` costs the MSRV; do it surgically.** Measured 2026-09-24: a plain
       `cargo update` on this lockfile pulls `rand_pcg 0.10.2` (needs `edition2024`, so Cargo 1.85+)
       and then `encoding_rs 0.8.42` / the `icu_*` 2.3 family (**require rustc 1.88**), taking the
