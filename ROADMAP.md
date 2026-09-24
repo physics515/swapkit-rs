@@ -51,19 +51,24 @@ Nothing downstream is trustworthy until this phase is clear.
       `default-features = false` + `rustls-tls` removes the whole `openssl` chain and the C
       dependency with it, which also serves the 100%-Rust principle. Verify the build after either.
 
-- [ ] **Tighten the dependency requirements in `Cargo.toml`.** `reqwest = "0"`, `chrono = "0"`,
-      `rand = "0"`, `dotenv = "0"`, `serde_urlencoded = "0"` and `tokio-test = "0"` each resolve to
-      "any 0.x", so a breaking 0.x release lands silently in a consumer's build. Pin the real minor
-      series the code compiles against.
-- [ ] **Remove the four unused dependencies.** `clippy::cargo` reports `rand`, `serde_with`,
-      `serde-aux` and `dotenv` as unused, and a grep of `src/` confirms **zero** references to
-      `rand`, `serde_with`, `serde_aux` or `serde_urlencoded` anywhere. Five declared dependencies
-      that nothing uses is pure cost to every consumer. Drop them, and re-check `url` while you are
-      there — it has exactly one reference.
-- [ ] **Move `dotenv` to `dev-dependencies`.** All 34 references are in doc examples and
-      `src/test_utils/mod.rs` — nothing in the library itself uses it — yet it is a *non-dev*
-      dependency, so every consumer inherits it. It has also been unmaintained since 2019
-      (RUSTSEC-2021-0141); `dotenvy` is the maintained fork if a replacement is wanted for dev use.
+- [x] **Tighten the dependency requirements in `Cargo.toml`.** Done 2026-09-24. The surviving 0.x
+      requirements now name their real minor series — `reqwest = "0.12"`, `chrono = "0.4"`,
+      `dotenv = "0.15"` (dev), `tokio-test = "0.4"` (dev) — so a breaking 0.x release can no longer
+      land silently in a consumer's build. `rand` and `serde_urlencoded` were removed outright.
+- [x] **Remove the four unused dependencies.** Done 2026-09-24. `rand`, `serde_with`, `serde-aux`
+      and `serde_urlencoded` were all declared with **zero** references in `src/`; removing them
+      dropped 16 crates from `Cargo.lock` (`darling`, `darling_core`, `darling_macro`, `deranged`,
+      `hex`, `ident_case`, `indexmap`, `num-conv`, `powerfmt`, `serde-aux`, `serde_with`,
+      `serde_with_macros`, `strsim`, `time`, `time-core`, `time-macros`) and cleared every
+      `clippy::cargo` unused-dependency warning. `url` was re-checked and **kept** — `src/types/errors.rs:2`
+      uses `url::ParseError` in the `APIError` enum.
+- [x] **Move `dotenv` to `dev-dependencies`.** Done 2026-09-24. All 39 references are in doc
+      examples and `src/test_utils/mod.rs`; nothing in the library itself uses it, so consumers no
+      longer inherit it.
+- [ ] **Stop using `dotenv` even as a dev-dependency.** It has been unmaintained since 2019
+      (RUSTSEC-2021-0141). `dotenvy` is the maintained fork, but the cleaner move is to drop the
+      crate from the *doc examples* entirely and read `std::env::var` there, so the published docs
+      stop advertising an unmaintained crate to consumers who copy them.
 - [ ] **Record the clippy baseline and drive it down.** Verified 2026-09-24: 47 warnings, none of
       them errors — 16 from the lib (15 duplicates), 35 from the lib tests (clippy offers 23
       auto-fixes via `cargo clippy --fix --lib -p swapkit-rs --tests`), plus the manifest's
