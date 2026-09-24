@@ -152,19 +152,26 @@ investing in any endpoint-level work — it decides whether later phases are rep
 - [ ] **Drop the brittle assertion** `assert_eq!(gas_prices.get_gas_prices().len(), 10)`
       (`src/swapkit/mod.rs:~90`) — it fails whenever upstream adds or removes a chain, which is not a
       defect in this crate.
-- [ ] **`get_transation_details` is misspelled in the public API** (`src/swapkit/endpoints/transactions.rs`)
-      — the method is missing the `c` in "transaction", while `README.md` and `src/lib.rs` both
-      advertise `get_transaction_details`. Renaming it is a breaking change, which 0.0.x permits;
-      call it out loudly in the release notes.
+- [x] **`get_transation_details` is misspelled in the public API.** Renamed 2026-09-24 to
+      `get_transaction_details`, matching what `README.md` and `src/lib.rs` always advertised. The
+      internal `api_get_transation_details` was renamed alongside it. **Breaking** for anyone who
+      called the misspelled name — 0.0.x permits it, and it is called out in the release notes.
 - [ ] **Fix the remaining endpoint names in the docs.** `README.md` and the mirrored crate docs in
       `src/lib.rs` advertise `get_chains`, but the method is `get_supported_chains`. A consumer
       copying the README does not compile.
 - [ ] **Fix the crate-doc typos** in `src/lib.rs`: the stray `9++` on the `get_chains` line and
       "fully typeed". They are the first thing a docs.rs visitor reads.
-- [ ] **Re-check the two endpoints documented as broken.**
-      `get_available_assets_for_pool` and `get_transaction_details` are both marked
-      "***Errors (Thorswap endpoint does not return a value.)***" in the README. Establish whether
-      they are broken upstream, broken here, or simply gone, and say so precisely.
+- [x] **Re-check the two endpoints documented as broken.** Answered 2026-09-24: **they are gone,
+      along with the entire host.** Every probed `api.thorswap.net` path returns HTTP 404 (see
+      Phase 1), so `get_available_assets_for_pool` and `get_transaction_details` are not
+      *specifically* broken — nothing on that base URL answers. `get_transaction_details` also
+      discarded its response body entirely and `println!`'d it to stdout; the `println!` is removed
+      (a library must not write to stdout) and the method now documents itself as an unmodelled
+      placeholder.
+- [ ] **Model a real return type for transaction tracking.** `get_transaction_details` returns
+      `Result<()>` and drops the body. Its v3 replacement is `POST /track`
+      (<https://api.swapkit.dev/docs/json>); model that response properly rather than keeping a
+      method that can only ever say "the HTTP call did not error".
 
 ---
 
