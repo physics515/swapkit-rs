@@ -86,7 +86,7 @@ mod tests {
 	async fn test_all_endpoints() {
 		let mut swapkit = get_test_swapkit();
 
-  		// chains
+		// chains
 		let supported_chains = swapkit.get_supported_chains().await.unwrap();
 		println!("{}", json!(supported_chains));
 		assert_ne!(supported_chains.get_chains().len(), 0);
@@ -159,7 +159,7 @@ mod tests {
 		println!("{}", json!(minimum_amount_to_send_with_details).to_string());
 		assert_eq!(minimum_amount_to_send_with_details.get_asset(), "BTC.BTC");
 
- 		let gas_history = swapkit.get_gas_history("bitcoin").await.unwrap();
+		let gas_history = swapkit.get_gas_history("bitcoin").await.unwrap();
 		println!("{}", json!(gas_history).to_string());
 		assert_eq!(gas_history.get_chain_id(), "bitcoin");
 
@@ -180,7 +180,7 @@ mod tests {
 		println!("{}", json!(cached_prices).to_string());
 		assert_eq!(cached_prices.len(), 5);
 
- 		let providers = swapkit.get_token_providers().await.unwrap();
+		let providers = swapkit.get_token_providers().await.unwrap();
 		println!("{}", json!(providers).to_string());
 		assert_ne!(providers.len(), 0);
 	}

@@ -1,8 +1,8 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
+
 use crate::deserialize_rust_decimal_from_anything_option;
 use crate::deserialize_rust_decimal_from_anything_option_default;
-
 use crate::Sparkline;
 
 /*

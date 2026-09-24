@@ -62,7 +62,7 @@ where
 
 #[allow(clippy::unnecessary_wraps)]
 pub const fn deserialize_rust_decimal_from_anything_option_default() -> Option<Decimal> {
-        None
+	None
 }
 
 #[allow(clippy::unnecessary_wraps)]

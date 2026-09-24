@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Configuration {
 	base_url: String,
-        dev_base_url: String,
+	dev_base_url: String,
 	rate_limit_ms: u64,
 	referer: String,
 	referrer: String,
@@ -17,7 +17,7 @@ impl Configuration {
 
 		Self {
 			base_url: "https://api.thorswap.net/".to_string(),
-                        dev_base_url: "https://dev-api.thorswap.net/".to_string(),
+			dev_base_url: "https://dev-api.thorswap.net/".to_string(),
 			rate_limit_ms,
 			referer: referer.to_string(),
 			x_api_key: x_api_key.to_string(),
