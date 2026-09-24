@@ -18,12 +18,18 @@ Nothing downstream is trustworthy until this phase is clear.
       `nightly-1.100.0 (6bb1652a0 2026-09-22)`: `cargo build --locked` exited 0 with zero errors, and
       `cargo clippy --locked --all-targets` exited 0. The `#![feature(const_trait_impl)]` gate still
       compiles, so nothing is on fire — the nightly gate is a *consumer* problem, not a build blocker.
-- [ ] **Drop the `#![feature(const_trait_impl)]` gate if nothing needs it.** A grep of `src/` finds
-      only ordinary inherent `pub const fn` getters (`src/types/chain_with_details.rs:80` and
-      ~40 siblings) and one free `pub const fn` in `src/utils.rs:64` — all of which are stable Rust.
-      No `impl const Trait for` appears anywhere. If the gate is vestigial, removing it makes the
-      published crate buildable on stable, which is the single biggest consumer-facing win available.
-      Verify with `cargo +stable build --locked`, not just nightly.
+- [x] **Drop the `#![feature(const_trait_impl)]` gate if nothing needs it.** Done 2026-09-24. The
+      gate was vestigial: `src/` contains only ordinary inherent `pub const fn` getters and one free
+      `pub const fn` in `src/utils.rs`, and no `impl const Trait for` anywhere. With the gate removed,
+      `cargo +stable build --locked` succeeded on `rustc 1.98.0 (88d9e12ae 2026-08-18)`. **The crate
+      now builds on stable Rust.** Never reintroduce a `#![feature(...)]`; nightly is for `rustfmt`
+      only.
+- [ ] **Work around the host's nightly-only `rustflags`.** `~/.cargo/config.toml` sets
+      `rustflags = ["-Z", "threads=8"]`, which makes *any* `cargo +stable` invocation on this host
+      fail with "the option `Z` is only accepted on the nightly compiler" before it reaches the
+      crate. Stable checks must clear it (`RUSTFLAGS="" cargo +stable build --locked`). CI does not
+      inherit that config, so this is a host quirk, not a crate defect — but it must not be mistaken
+      for a stable-build regression.
 - [ ] **Make the test surface runnable without secrets.** `src/test_utils/mod.rs:9` does
       `dotenv::var("SWAPKIT_REFERER").unwrap()`, and there is no `.env` in a fresh clone, so the one
       integration test and every doctest panic before they reach any assertion. Replace the unwrap
