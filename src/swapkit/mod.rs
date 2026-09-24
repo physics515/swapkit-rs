@@ -77,46 +77,74 @@ impl Swapkit {
 
 #[cfg(test)]
 mod tests {
-	use serde_json::json;
+	//! Live API tests.
+	//!
+	//! **Every test below calls the real `SwapKit` API with a real key.** Without
+	//! `SWAPKIT_REFERER` and `SWAPKIT_X_API_KEY` each one prints why it did not run and returns —
+	//! it never fails for a missing credential, because a red test here would be indistinguishable
+	//! from "the network was down". Deterministic coverage lives in `tests/deserialization.rs`,
+	//! which needs neither.
+	//!
+	//! Each test builds its own [`Swapkit`], and the 1 req/s limiter is per client, so run the live
+	//! suite with `cargo test --lib -- --test-threads=1` to keep the aggregate request rate inside
+	//! what upstream throttles to.
 
 	use crate::{skip_without_credentials, RequestABorrowQuoteParams, RequestARepayQuoteParams, RequestASwapQuoteParams};
 
 	#[tokio::test]
-	async fn test_all_endpoints() {
+	async fn supported_chains() {
 		skip_without_credentials!(swapkit);
-
-		// chains
 		let supported_chains = swapkit.get_supported_chains().await.unwrap();
-		println!("{}", json!(supported_chains));
-		assert_ne!(supported_chains.get_chains().len(), 0);
+		assert!(!supported_chains.get_chains().is_empty());
+	}
 
+	#[tokio::test]
+	async fn chains_with_details() {
+		skip_without_credentials!(swapkit);
 		let chains_with_details = swapkit.get_chains_with_details().await.unwrap();
-		println!("{}", json!(chains_with_details));
-		assert_ne!(chains_with_details.get_chains().len(), 0);
+		assert!(!chains_with_details.get_chains().is_empty());
+	}
 
-		// gas
+	#[tokio::test]
+	async fn gas_prices() {
+		skip_without_credentials!(swapkit);
 		let gas_prices = swapkit.get_gas_prices().await.unwrap();
-		println!("{}", json!(gas_prices).to_string());
-		assert_eq!(gas_prices.get_gas_prices().len(), 10);
+		// Deliberately not an exact count: the number of chains is upstream's business, and
+		// asserting it made this test fail whenever a chain was added or removed.
+		assert!(!gas_prices.get_gas_prices().is_empty());
+	}
 
-		// lending
-		let _ = swapkit.get_available_assets_for_pool("BTC.BTC").await.unwrap();
+	#[tokio::test]
+	async fn available_assets_for_pool() {
+		skip_without_credentials!(swapkit);
+		swapkit.get_available_assets_for_pool("BTC.BTC").await.unwrap();
+	}
 
+	#[tokio::test]
+	async fn available_lending_assets() {
+		skip_without_credentials!(swapkit);
 		let lending_assets = swapkit.get_available_lending_assets().await.unwrap();
-		println!("{}", json!(lending_assets).to_string());
 		assert!(!lending_assets.is_empty());
+	}
 
+	#[tokio::test]
+	async fn loans() {
+		skip_without_credentials!(swapkit);
 		let loan = swapkit.get_loans("bc1qzafz3f0h90u7n9j862uupaf5hpeydmhvpnzwzz", "BTC.BTC").await.unwrap();
-		println!("{}", json!(loan).to_string());
-		assert_eq!(loan.get_asset(), "BTC.BTC".to_string());
+		assert_eq!(loan.get_asset(), "BTC.BTC");
+	}
 
-		// providers
+	#[tokio::test]
+	async fn supported_providers() {
+		skip_without_credentials!(swapkit);
 		let supported_providers = swapkit.get_supported_providers().await.unwrap();
-		println!("{}", json!(supported_providers));
-		assert_ne!(supported_providers.get_providers().len(), 0);
+		assert!(!supported_providers.get_providers().is_empty());
+	}
 
-		// quotes
-		let request_a_quote_params = RequestASwapQuoteParams {
+	#[tokio::test]
+	async fn request_a_swap_quote() {
+		skip_without_credentials!(swapkit);
+		let parameters = RequestASwapQuoteParams {
 			sell_asset: "BTC.BTC".to_string(),
 			buy_asset: "ETH.AAVE-0X7FC66500C84A76AD7E9C93437BFC5AC33E2DDAE9".to_string(),
 			sell_amount: "1".to_string(),
@@ -127,10 +155,14 @@ mod tests {
 			is_affiliate_fee_flat: None,
 			slippage: None,
 		};
-		let quote = swapkit.get_request_a_swap_quote(request_a_quote_params).await.unwrap();
-		println!("{}", json!(quote).to_string());
+		let quote = swapkit.get_request_a_swap_quote(parameters).await.unwrap();
+		assert!(!quote.get_quote_id().is_empty());
+	}
 
-		let request_a_quote_params = RequestABorrowQuoteParams {
+	#[tokio::test]
+	async fn request_a_borrow_quote() {
+		skip_without_credentials!(swapkit);
+		let parameters = RequestABorrowQuoteParams {
 			asset_in: "BTC.BTC".to_string(),
 			asset_out: "BTC.BTC".to_string(),
 			slippage: "0.5".to_string(),
@@ -138,49 +170,79 @@ mod tests {
 			sender_address: "bc1q7cyrfmck2ffu2ud3rn5l5a8yv6f0chkp0zpemf".to_string(),
 			recipient_address: "bc1q7cyrfmck2ffu2ud3rn5l5a8yv6f0chkp0zpemf".to_string(),
 		};
-		let borrow_quote = swapkit.get_request_a_borrow_quote(request_a_quote_params).await.unwrap();
-		println!("{}", json!(borrow_quote).to_string());
+		swapkit.get_request_a_borrow_quote(parameters).await.unwrap();
+	}
 
-		let request_a_repay_quote_params = RequestARepayQuoteParams {
+	#[tokio::test]
+	async fn request_a_repay_quote() {
+		skip_without_credentials!(swapkit);
+		let parameters = RequestARepayQuoteParams {
 			repay_asset: "BTC.BTC".to_string(),
 			collateral_asset: "BTC.BTC".to_string(),
 			amount_percentage: "0.5".to_string(),
 			sender_address: "bc1qzafz3f0h90u7n9j862uupaf5hpeydmhvpnzwzz".to_string(),
 			collateral_address: "bc1qzafz3f0h90u7n9j862uupaf5hpeydmhvpnzwzz".to_string(),
-			affiliate_basis_points: "".to_string(),
-			affiliate_address: "".to_string(),
+			affiliate_basis_points: String::new(),
+			affiliate_address: String::new(),
 		};
-		let repay_quote = swapkit.get_request_a_repay_quote(request_a_repay_quote_params).await.unwrap();
-		println!("{}", json!(repay_quote).to_string());
+		swapkit.get_request_a_repay_quote(parameters).await.unwrap();
+	}
 
-		// resource worker
-		let minimum_amount_to_send_with_details = swapkit.get_minimum_amount_to_send_with_details("BTC.BTC", "ETH.ETH").await.unwrap();
-		println!("{}", json!(minimum_amount_to_send_with_details).to_string());
-		assert_eq!(minimum_amount_to_send_with_details.get_asset(), "BTC.BTC");
+	#[tokio::test]
+	async fn minimum_amount_to_send_with_details() {
+		skip_without_credentials!(swapkit);
+		let minimum = swapkit.get_minimum_amount_to_send_with_details("BTC.BTC", "ETH.ETH").await.unwrap();
+		assert_eq!(minimum.get_asset(), "BTC.BTC");
+	}
 
+	#[tokio::test]
+	async fn gas_history() {
+		skip_without_credentials!(swapkit);
 		let gas_history = swapkit.get_gas_history("bitcoin").await.unwrap();
-		println!("{}", json!(gas_history).to_string());
 		assert_eq!(gas_history.get_chain_id(), "bitcoin");
+	}
 
-		let gas_prices = swapkit.get_gas_rates().await.unwrap();
-		println!("{}", json!(gas_prices).to_string());
-		assert_ne!(gas_prices.len(), 0);
+	#[tokio::test]
+	async fn gas_rates() {
+		skip_without_credentials!(swapkit);
+		let gas_rates = swapkit.get_gas_rates().await.unwrap();
+		assert!(!gas_rates.is_empty());
+	}
 
-		// tokens
+	#[tokio::test]
+	async fn currencies_with_details() {
+		skip_without_credentials!(swapkit);
 		let currencies_with_details = swapkit.get_currencies_with_details().await.unwrap();
-		println!("{}", json!(currencies_with_details).to_string());
-		assert_eq!(currencies_with_details.get_currencies().len(), 1286);
+		// Deliberately not an exact count: the currency list is upstream's business.
+		assert!(!currencies_with_details.get_currencies().is_empty());
+	}
 
+	#[tokio::test]
+	async fn token_pair_exchange_rate() {
+		skip_without_credentials!(swapkit);
 		let exchange_rate = swapkit.get_token_pair_exchange_rate("THORCHAIN", "DOGE.DOGE", "THOR.RUNE").await.unwrap();
-		println!("{}", json!(exchange_rate).to_string());
 		assert_ne!(exchange_rate.get_price(), &rust_decimal::Decimal::ZERO);
+	}
 
-		let cached_prices = swapkit.get_cached_prices(vec!["ETH.unshETH-0x0Ae38f7E10A43B5b2fB064B42a2f4514cbA909ef".to_string(), "BSC.DOT-0X7083609FCE4D1D8DC0C979AAB8C869EA2C873402".to_string(), "BTC.BTC".to_string(), "ETH.ARB-0XB50721BCF8D664C30412CFBC6CF7A15145234AD1".to_string(), "AVAX.EURC-0xC891EB4cbdEFf6e073e859e987815Ed1505c2ACD".to_string()], Some(true), Some(true), Some(true)).await.unwrap();
-		println!("{}", json!(cached_prices).to_string());
-		assert_eq!(cached_prices.len(), 5);
+	#[tokio::test]
+	async fn cached_prices() {
+		skip_without_credentials!(swapkit);
+		let tokens = vec!["ETH.unshETH-0x0Ae38f7E10A43B5b2fB064B42a2f4514cbA909ef".to_string(), "BSC.DOT-0X7083609FCE4D1D8DC0C979AAB8C869EA2C873402".to_string(), "BTC.BTC".to_string(), "ETH.ARB-0XB50721BCF8D664C30412CFBC6CF7A15145234AD1".to_string(), "AVAX.EURC-0xC891EB4cbdEFf6e073e859e987815Ed1505c2ACD".to_string()];
+		let requested = tokens.len();
+		let cached_prices = swapkit.get_cached_prices(tokens, Some(true), Some(true), Some(true)).await.unwrap();
+		assert_eq!(cached_prices.len(), requested);
+	}
 
+	#[tokio::test]
+	async fn token_providers() {
+		skip_without_credentials!(swapkit);
 		let providers = swapkit.get_token_providers().await.unwrap();
-		println!("{}", json!(providers).to_string());
-		assert_ne!(providers.len(), 0);
+		assert!(!providers.is_empty());
+	}
+
+	#[tokio::test]
+	async fn transaction_details() {
+		skip_without_credentials!(swapkit);
+		swapkit.get_transaction_details("0x0000000000000000000000000000000000000000000000000000000000000000").await.unwrap();
 	}
 }

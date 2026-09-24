@@ -148,13 +148,15 @@ investing in any endpoint-level work — it decides whether later phases are rep
       application error type; a library should expose something a consumer can match on. `APIError`
       (`src/types/errors.rs`) already exists as a `thiserror` enum — return it, and keep `anyhow`
       to `dev-dependencies` if it is wanted for tests.
-- [ ] **Split the monolithic integration test.** `test_all_endpoints`
-      (`src/swapkit/mod.rs:74`) is the crate's only `#[test]`/`#[tokio::test]` and exercises every
-      endpoint in one function, so the first failure hides every endpoint after it. One test per
-      endpoint gives a real pass/fail count.
-- [ ] **Drop the brittle assertion** `assert_eq!(gas_prices.get_gas_prices().len(), 10)`
-      (`src/swapkit/mod.rs:~90`) — it fails whenever upstream adds or removes a chain, which is not a
-      defect in this crate.
+- [x] **Split the monolithic integration test.** Done 2026-09-24: `test_all_endpoints` is now 18
+      `#[tokio::test]`s, one per endpoint, each skipping with a reason when credentials are absent.
+      A failure in one endpoint no longer hides the 17 after it. The live suite should be run with
+      `--test-threads=1`, since the 1 req/s limiter is per client — noted in the module docs.
+- [x] **Drop the brittle assertion** `assert_eq!(gas_prices.get_gas_prices().len(), 10)`. Done
+      2026-09-24, along with its twin `assert_eq!(currencies_with_details.get_currencies().len(), 1286)`.
+      Both are now non-empty checks. The one *kept* count is `cached_prices`, which asserts the
+      response has an entry per requested token — that is this crate's contract, not upstream's
+      inventory.
 - [x] **`get_transation_details` is misspelled in the public API.** Renamed 2026-09-24 to
       `get_transaction_details`, matching what `README.md` and `src/lib.rs` always advertised. The
       internal `api_get_transation_details` was renamed alongside it. **Breaking** for anyone who
