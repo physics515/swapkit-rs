@@ -1,5 +1,4 @@
 use anyhow::Result;
-use chrono::Utc;
 
 use crate::{api_get_request_a_borrow_quote, api_get_request_a_repay_quote, api_get_request_a_swap_quote, RequestABorrowQuoteParams, RequestARepayQuoteParams, RequestASwapQuoteParams};
 use crate::{BorrowQuote, Quote, RepayQuote, Swapkit};
@@ -61,7 +60,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_request_a_swap_quote(self.get_config().get_base_url(), self.get_headers()?, parameters).await
 	}
 
@@ -151,7 +149,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_request_a_borrow_quote(self.get_config().get_base_url(), self.get_headers()?, parameters).await
 	}
 
@@ -230,7 +227,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_request_a_repay_quote(self.get_config().get_base_url(), self.get_headers()?, parameters).await
 	}
 }

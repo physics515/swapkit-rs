@@ -1,5 +1,4 @@
 use anyhow::Result;
-use chrono::Utc;
 
 use crate::Swapkit;
 use crate::{api_get_chains_with_details, api_get_supported_chains, ChainsWithDetails, SupportedChains};
@@ -54,7 +53,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_supported_chains(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 
@@ -120,7 +118,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_chains_with_details(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 }

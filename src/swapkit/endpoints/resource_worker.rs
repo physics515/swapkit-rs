@@ -1,5 +1,4 @@
 use anyhow::Result;
-use chrono::Utc;
 
 use crate::Swapkit;
 use crate::{api_get_gas_history, api_get_gas_rates, api_get_minimum_amount_to_send_with_details, GasHistory, GasPrice, MinimumAmountToSendWithDetails};
@@ -55,7 +54,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_minimum_amount_to_send_with_details(self.get_config().get_base_url(), self.get_headers()?, from, to).await
 	}
 
@@ -113,7 +111,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_gas_history(self.get_config().get_base_url(), self.get_headers()?, chain_id).await
 	}
 
@@ -163,7 +160,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_gas_rates(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 }

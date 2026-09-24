@@ -1,5 +1,4 @@
 use anyhow::Result;
-use chrono::Utc;
 
 use crate::{api_get_available_assets_for_pool, api_get_available_lending_assets, api_get_loans};
 use crate::{LendingAsset, Loan, Swapkit};
@@ -24,7 +23,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_available_assets_for_pool(self.get_config().get_base_url(), self.get_headers()?, asset).await
 	}
 
@@ -78,7 +76,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_available_lending_assets(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 
@@ -133,7 +130,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_loans(self.get_config().get_base_url(), self.get_headers()?, address, asset).await
 	}
 }

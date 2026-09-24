@@ -1,5 +1,4 @@
 use anyhow::Result;
-use chrono::Utc;
 
 use crate::Swapkit;
 use crate::{api_get_cached_prices, api_get_currencies_with_details, api_get_token_pair_exchange_rate, api_get_token_providers, CachedPrice, CachedPricesParameters, CurrenciesWithDetails, ExchangeRate, Provider, TokenIdentifier};
@@ -62,7 +61,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_currencies_with_details(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 
@@ -112,7 +110,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_token_pair_exchange_rate(self.get_config().get_base_url(), self.get_headers()?, provider, buy_asset, sell_asset).await
 	}
 
@@ -181,7 +178,6 @@ impl Swapkit {
 
 		let parameters = CachedPricesParameters { tokens, metadata, lookup, sparkline };
 
-		self.set_last_call(Utc::now());
 		api_get_cached_prices(self.get_config().get_base_url(), self.get_headers()?, parameters).await
 	}
 
@@ -234,7 +230,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_token_providers(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 }

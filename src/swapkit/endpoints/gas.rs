@@ -1,5 +1,4 @@
 use anyhow::Result;
-use chrono::Utc;
 
 use crate::Swapkit;
 use crate::{api_get_gas_prices, GasPrices};
@@ -51,7 +50,6 @@ impl Swapkit {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
 		api_get_gas_prices(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 }

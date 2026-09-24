@@ -267,6 +267,12 @@ the code was right; a red one could be any of the three.
 
 ## Phase 4 — Ergonomics and modernization
 
+- [ ] **The rate limiter stamps `last_call` before the request, not after.**
+      `sleep_until_ok_to_call` sets `last_call = now` and *then* the request is made, so a request
+      that takes 3 s leaves the next call free to fire immediately — the 1 req/s floor is on request
+      *starts*, not on the gap between them. That may well be what upstream throttles on; decide
+      deliberately and document it either way. Do not change it without a reason.
+
 - [ ] **Reuse one `reqwest::Client`.** Every `api_*` function builds a brand-new client per call
       (`reqwest::Client::builder().build()`, e.g. `src/api/chains/supported_chains.rs:9`), which
       throws away connection pooling and TLS session reuse on every request. Build it once and hold
