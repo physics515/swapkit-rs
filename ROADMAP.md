@@ -30,11 +30,18 @@ Nothing downstream is trustworthy until this phase is clear.
       crate. Stable checks must clear it (`RUSTFLAGS="" cargo +stable build --locked`). CI does not
       inherit that config, so this is a host quirk, not a crate defect — but it must not be mistaken
       for a stable-build regression.
-- [ ] **Make the test surface runnable without secrets.** `src/test_utils/mod.rs:9` does
-      `dotenv::var("SWAPKIT_REFERER").unwrap()`, and there is no `.env` in a fresh clone, so the one
-      integration test and every doctest panic before they reach any assertion. Replace the unwrap
-      with an explicit skip-with-reason (or a `Result`-returning helper) so a credential-less run
-      reports "not run", never a false failure.
+- [x] **Make the test surface runnable without secrets.** Done 2026-09-24 for the integration test.
+      `src/test_utils/mod.rs` now exposes `try_test_swapkit() -> Option<Swapkit>` plus a
+      `skip_without_credentials!` macro; `cargo test --locked --lib` on a credential-less checkout
+      prints `NOT RUN (no credentials): SWAPKIT_REFERER and SWAPKIT_X_API_KEY unset or empty` and
+      exits 0 instead of panicking. **Note what this does and does not prove:** the test *executes*,
+      but exercises zero endpoints. Real offline coverage is Phase 3.
+- [ ] **Make the ~17 doctests runnable without secrets too.** Each one still does
+      `dotenv::var("SWAPKIT_REFERER").unwrap()` inline, so `cargo test --doc` panics 17 times on a
+      credential-less checkout. Marking them `rust,no_run` would make them *compile-checked but not
+      executed* — which is strictly more useful than today, because a compile-checked example
+      catches the Phase 2 method-name drift (`get_chains` vs `get_supported_chains`) that the
+      README and crate docs currently advertise.
 - [x] **Add `/scratch` to `.gitignore`** (it previously listed only `/target` and `.env`), so routine
       scratch output can never be staged. Landed 2026-09-24.
 - [ ] **Add CI.** The repo has no `.github/` at all, so a PR has no checks. A workflow running

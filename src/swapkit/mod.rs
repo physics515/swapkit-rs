@@ -79,12 +79,11 @@ impl Swapkit {
 mod tests {
 	use serde_json::json;
 
-	use crate::test_utils::get_test_swapkit;
-	use crate::{RequestABorrowQuoteParams, RequestARepayQuoteParams, RequestASwapQuoteParams};
+	use crate::{skip_without_credentials, RequestABorrowQuoteParams, RequestARepayQuoteParams, RequestASwapQuoteParams};
 
 	#[tokio::test]
 	async fn test_all_endpoints() {
-		let mut swapkit = get_test_swapkit();
+		skip_without_credentials!(swapkit);
 
 		// chains
 		let supported_chains = swapkit.get_supported_chains().await.unwrap();
