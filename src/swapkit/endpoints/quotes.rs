@@ -19,10 +19,11 @@ impl Swapkit {
 	/// ```
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;
+	/// use swapkit_rs::RequestASwapQuoteParams;
 	///
 	/// # tokio_test::block_on(async {
 	/// let swapkit_config = Configuration::new(None, dotenv::var("SWAPKIT_REFERER").unwrap().as_str(), dotenv::var("SWAPKIT_X_API_KEY").unwrap().as_str());
@@ -40,7 +41,7 @@ impl Swapkit {
 	///     slippage: None,
 	/// }).await.unwrap();
 	///
-	/// assert_ne!(quote.get_quote().len(), 0);
+	/// assert_ne!(quote.get_quote_id().len(), 0);
 	/// # });
 	/// ```
 	///
@@ -101,7 +102,7 @@ impl Swapkit {
 	///
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;
@@ -168,7 +169,7 @@ impl Swapkit {
 	///
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;

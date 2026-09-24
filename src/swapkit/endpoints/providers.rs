@@ -16,7 +16,7 @@ impl Swapkit {
 	///
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;

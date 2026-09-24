@@ -36,12 +36,15 @@ Nothing downstream is trustworthy until this phase is clear.
       prints `NOT RUN (no credentials): SWAPKIT_REFERER and SWAPKIT_X_API_KEY unset or empty` and
       exits 0 instead of panicking. **Note what this does and does not prove:** the test *executes*,
       but exercises zero endpoints. Real offline coverage is Phase 3.
-- [ ] **Make the ~17 doctests runnable without secrets too.** Each one still does
-      `dotenv::var("SWAPKIT_REFERER").unwrap()` inline, so `cargo test --doc` panics 17 times on a
-      credential-less checkout. Marking them `rust,no_run` would make them *compile-checked but not
-      executed* — which is strictly more useful than today, because a compile-checked example
-      catches the Phase 2 method-name drift (`get_chains` vs `get_supported_chains`) that the
-      README and crate docs currently advertise.
+- [x] **Make the ~17 doctests runnable without secrets too.** Done 2026-09-24. All 17 `​```rust`
+      fences are now `​```rust,no_run`, so `cargo test --locked --doc` **compiles** every example
+      without a network call or a credential: 17 passed, 0 failed, on a credential-less host. The
+      change immediately caught a doc example that had never compiled — the
+      `get_request_a_swap_quote` example was missing `use swapkit_rs::RequestASwapQuoteParams` and
+      called a `Quote::get_quote()` that does not exist (the accessor is `get_quote_id()`).
+- [ ] **Keep the examples executing somewhere.** `no_run` proves an example compiles, not that it
+      works. Once the live suite is behind an env guard (Phase 3), consider a credentialed CI job
+      that drops `no_run` — or accept compile-checking as the contract and say so in the docs.
 - [x] **Add `/scratch` to `.gitignore`** (it previously listed only `/target` and `.env`), so routine
       scratch output can never be staged. Landed 2026-09-24.
 - [ ] **Add CI.** The repo has no `.github/` at all, so a PR has no checks. A workflow running
