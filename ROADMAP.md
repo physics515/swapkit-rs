@@ -96,8 +96,16 @@ Nothing downstream is trustworthy until this phase is clear.
       postfix: ms`). Every one would mean renaming a public field whose name mirrors the upstream
       JSON key. Decide deliberately: rename with `#[serde(rename)]` to keep the wire format, or
       leave them and accept that the backlog floor is 7. **Do not** silence them with an `allow`.
-- [ ] **Declare an MSRV** in `Cargo.toml` once the crate builds on stable, so the toolchain contract
-      is explicit rather than implied.
+- [x] **Declare an MSRV** in `Cargo.toml`. Done 2026-09-24: `rust-version = "1.83"`, and `"1.83"`
+      is now the first leg of the CI matrix so it cannot drift silently. Measured, not guessed —
+      1.83.0 builds and runs the whole suite green (18 lib + 4 deserialization + 18 doctests), and
+      **1.82.0 fails** with two `E0658 mutable references are not allowed in constant functions` on
+      `Configuration::set_rate_limit_ms` and `Swapkit::set_last_call`: `const_mut_refs` stabilised
+      in 1.83. Those two `const fn`s came from satisfying `clippy::missing_const_for_fn`, so the
+      lint cost exactly one Rust release of MSRV — an acceptable trade, but worth knowing.
+- [ ] **Re-probe the true MSRV floor if 1.83 ever costs a consumer.** Dropping the two `const fn`
+      setters would very likely get the crate back to 1.82 or lower; nothing else in `src/` is
+      obviously recent. Only worth doing if someone actually asks.
 
 ---
 
@@ -106,27 +114,63 @@ Nothing downstream is trustworthy until this phase is clear.
 The crate is bindings for an API that appears to have moved out from under it. Resolve this before
 investing in any endpoint-level work — it decides whether later phases are repairs or a rewrite.
 
-- [ ] **Confirm whether the legacy THORSwap aggregator API still answers.** `Configuration::new`
-      hardcodes `https://api.thorswap.net/` (`src/swapkit/config.rs:19`) and every endpoint builds
-      paths like `{base_url}aggregator/chains` (`src/api/chains/supported_chains.rs:14`). Unauthenticated
-      probes on 2026-09-24 returned **HTTP 404** for `https://api.thorswap.net/`,
-      `/aggregator/chains`, `/aggregator/tokens/quote` and `/tokenlist/utils/providers`. A 404
-      without an API key is suggestive, not proof — re-probe **with real credentials** and record the
-      result here before concluding the base URL is dead.
-- [ ] **Map the current SwapKit API surface.** SwapKit's own docs now describe a v3 REST API at
-      `api.swapkit.dev` with `/providers`, `/tokens`, `/v3/quote`, `/v3/swap`, `/track` and `/swapTo`
-      (<https://docs.swapkit.dev/swapkit-api/introduction.md>). `https://api.swapkit.dev/providers`
-      and `/tokens` answered **HTTP 401** on 2026-09-24 — live and auth-gated — and
-      `https://api.swapkit.dev/docs` answered **200**, so the OpenAPI definition is readable. Pull
-      that definition and write the per-method old→new mapping into this roadmap as its own items.
+- [ ] **Confirm whether the legacy THORSwap aggregator API still answers.** Re-probed 2026-09-24
+      (second run, unauthenticated, `curl -o /dev/null -w '%{http_code}'`):
+      `https://api.thorswap.net/` **404**, `/aggregator/chains` **404**,
+      `/aggregator/tokens/quote` **404**, `/tokenlist/utils/providers` **404**,
+      `/resource-worker/gasPrice/getAll` **404**. `https://dev-api.thorswap.net/aggregator/chains`
+      answered **403**, not 404 — the dev host is at least still resolving and terminating TLS.
+      A 404 without an API key remains suggestive, not proof: a 404 is the *wrong* status for an
+      auth failure, which is what makes it damning, but only a probe **with real credentials**
+      settles it. **Still `[ ]` — this needs the owner's key.** Everything downstream of it is
+      already written up as if the host is gone, because the v3 surface below is confirmed live.
+- [x] **Map the current SwapKit API surface.** Done 2026-09-24. The OpenAPI definition is served at
+      **<https://api.swapkit.dev/docs/json>** (the Swagger UI at `/docs` loads it from `./json`;
+      `/openapi.json`, `/swagger.json`, `/docs-json` and `/api-json` all 404, so this is the only
+      URL that works). It self-describes as `SwapKit API v0.1.0`, lists servers
+      `https://api.swapkit.dev`, `https://dev-api.swapkit.dev` and `http://localhost:8080`, and
+      declares exactly one security scheme: **`apiKey` in the `x-api-key` header**. The full path
+      list, saved from that definition:
+
+      | method | path |
+      | --- | --- |
+      | GET | `/approve`, `/asset/providers`, `/balance`, `/gas`, `/gas/history`, `/providers`, `/providers/identifiers-mapping`, `/providers/status`, `/swapFrom`, `/swapTo`, `/tokens`, `/tokens/search`, `/tokens/whitelist/pools`, `/tokens/whitelist/tokens` |
+      | GET | `/v3/limit/orders`, `/v3/limit/orders/{orderId}`, `/v3/limit/tokens` |
+      | POST | `/chainflip/broker/channel`, `/price`, `/quote`, `/screen`, `/track`, `/v3/quote`, `/v3/swap` |
+      | POST | `/v3/limit/build`, `/v3/limit/cancel/build`, `/v3/limit/cancel/submit`, `/v3/limit/quote`, `/v3/limit/submit` |
+
+      The upstream SDK repo moved: `thorswap/SwapKit` now 301-redirects to
+      **<https://github.com/swapkit/SwapKit>**, last pushed 2026-08-03 and not archived.
+- [ ] **Write the per-method old→new mapping.** From the definition above, the shape of the
+      migration is: `get_supported_chains` / `get_chains_with_details` have **no v3 equivalent** —
+      there is no `/chains` path at all (probed: 404), so chain data now comes out of `/tokens`;
+      `get_supported_providers` → `GET /providers` (plus `/providers/status` and
+      `/providers/identifiers-mapping`, which are new); `get_currencies_with_details` →
+      `GET /tokens` (`provider`, `category`) and the new `GET /tokens/search`; `get_cached_prices` →
+      **`POST /price`** — note the method change from GET to POST; `get_gas_prices` / `get_gas_rates`
+      → `GET /gas` (`chainId`, `timeFrame`); `get_gas_history` → `GET /gas/history`;
+      `get_request_a_swap_quote` → **`POST /v3/quote`** with a JSON body
+      (`sellAsset`, `buyAsset`, `sellAmount`, `providers`, …) rather than query parameters;
+      `get_transaction_details` → `POST /track`. The lending endpoints
+      (`get_available_lending_assets`, `get_loans`, `get_request_a_borrow_quote`,
+      `get_request_a_repay_quote`, `get_available_assets_for_pool`) and
+      `get_token_pair_exchange_rate` and `get_minimum_amount_to_send_with_details` have **no
+      counterpart in the v3 definition** — decide per endpoint whether they are dropped or rebuilt.
+      Verify each line against the definition before writing code; this paragraph is a reading of
+      the path list, not a tested mapping.
 - [ ] **Decide the migration strategy and record it here** before writing migration code: whether
       v3 becomes the default base URL with the legacy paths removed outright, or the two live side by
       side behind a config switch. The crate is 0.0.x, so a clean break is permitted — but it must be
       a deliberate, written decision, not an accident of whichever endpoint got touched first.
-- [ ] **Re-derive the auth contract.** The client sends `Referer`, `X-API-KEY` and a lowercase
-      `referrer` header (`src/swapkit/mod.rs:23-26`), the last hardcoded to
-      `https://sk.thorswap.net`. Confirm against the current docs what v3 actually requires; a
-      hardcoded third-party referrer in a library is wrong if it is not required.
+- [ ] **Re-derive the auth contract.** **Answered by the OpenAPI definition, pending a live
+      check.** `https://api.swapkit.dev/docs/json` declares exactly one security scheme —
+      `{"apiKey": {"type": "apiKey", "name": "x-api-key", "in": "header"}}` — applied globally.
+      There is **no `Referer` and no `referrer`** anywhere in it. So the two referer headers this
+      client sends, including the third-party `https://sk.thorswap.net` hardcoded at
+      `src/swapkit/config.rs`, are almost certainly legacy. Confirm with a credentialed request
+      before removing them, because dropping a header that *is* required turns every call into a
+      401 — but plan on `Configuration::new` losing its `referer` argument, which is a breaking
+      signature change worth doing in the same release as the v3 migration.
 
 ---
 

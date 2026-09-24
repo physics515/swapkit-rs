@@ -55,8 +55,11 @@
 //! ```
 //!
 //! ## Minimum supported Rust version
-//! swapkit-rs builds on **stable** Rust. Nightly is needed only to run `cargo fmt`, because
-//! `rustfmt.toml` uses unstable options.
+//! **Rust 1.83.** Verified by building and running the full test suite on 1.83.0; 1.82 does not
+//! compile the crate, because the `const fn` setters take `&mut self` and `const_mut_refs` was
+//! stabilised in 1.83.
+//!
+//! Nightly is needed only to run `cargo fmt`, because `rustfmt.toml` uses unstable options.
 
 #[allow(clippy::wildcard_imports)]
 pub(crate) use api::*;

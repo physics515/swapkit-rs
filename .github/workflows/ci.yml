@@ -20,7 +20,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        toolchain: [stable, nightly]
+        # 1.83 is the declared MSRV (`rust-version` in Cargo.toml). 1.82 does not compile this
+        # crate: `const fn` setters taking `&mut self` need `const_mut_refs`, stable since 1.83.
+        toolchain: ["1.83", stable, nightly]
     steps:
       - uses: actions/checkout@v4
 
