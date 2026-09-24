@@ -38,3 +38,42 @@ pub struct ProviderVersion {
 	#[serde(serialize_with = "rust_decimal::serde::str::serialize", deserialize_with = "crate::utils::deserialize_rust_decimal_from_anything")]
 	patch: Decimal,
 }
+
+impl Provider {
+	#[must_use]
+	pub const fn get_provider(&self) -> &String {
+		&self.provider
+	}
+
+	#[must_use]
+	pub const fn get_version(&self) -> &ProviderVersion {
+		&self.version
+	}
+
+	#[must_use]
+	pub const fn get_nb_tokens(&self) -> &Decimal {
+		&self.nb_tokens
+	}
+
+	#[must_use]
+	pub const fn get_logo(&self) -> &String {
+		&self.logo
+	}
+}
+
+impl ProviderVersion {
+	#[must_use]
+	pub const fn get_major(&self) -> &Decimal {
+		&self.major
+	}
+
+	#[must_use]
+	pub const fn get_minor(&self) -> &Decimal {
+		&self.minor
+	}
+
+	#[must_use]
+	pub const fn get_patch(&self) -> &Decimal {
+		&self.patch
+	}
+}

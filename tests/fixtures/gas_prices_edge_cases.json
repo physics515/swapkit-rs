@@ -1,0 +1,30 @@
+[
+	{
+		"asset": "ETH.ETH",
+		"units": "gwei",
+		"gas": "13.5",
+		"chainId": "1",
+		"gasAsset": "0.0000000135"
+	},
+	{
+		"asset": "AVAX.AVAX",
+		"units": "gwei",
+		"gas": null,
+		"chainId": "43114",
+		"gasAsset": null
+	},
+	{
+		"asset": "BSC.BNB",
+		"units": "gwei",
+		"gas": "",
+		"chainId": "56",
+		"gasAsset": "Infinity"
+	},
+	{
+		"asset": "DOGE.DOGE",
+		"units": "satsperbyte",
+		"gas": "NULL",
+		"chainId": "dogecoin",
+		"gasAsset": "inf"
+	}
+]

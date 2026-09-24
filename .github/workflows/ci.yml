@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+# Everything in this workflow is deliberately offline. The crate's live API suite needs
+# SWAPKIT_REFERER / SWAPKIT_X_API_KEY, which CI does not have: the lib test reports
+# "NOT RUN (no credentials)" and exits 0, and every doctest is `no_run`, so it is compiled
+# but never executed. Nothing here calls the SwapKit API.
+jobs:
+  build:
+    name: build (${{ matrix.toolchain }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 1.83 is the declared MSRV (`rust-version` in Cargo.toml). 1.82 does not compile this
+        # crate: `const fn` setters taking `&mut self` need `const_mut_refs`, stable since 1.83.
+        toolchain: ["1.83", stable, nightly]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ${{ matrix.toolchain }}
+        run: |
+          rustup toolchain install ${{ matrix.toolchain }} --profile minimal --component clippy
+          rustup default ${{ matrix.toolchain }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.toolchain }}
+
+      - name: cargo build
+        run: cargo build --locked --all-targets
+
+      - name: cargo clippy
+        # The crate sets `#![warn(clippy::pedantic, clippy::nursery, clippy::all, clippy::cargo)]`
+        # and still carries an inherited warning backlog, so clippy is not gated on `-D warnings`
+        # yet. Exiting 0 still catches every hard error.
+        run: cargo clippy --locked --all-targets
+
+      - name: cargo test --lib
+        run: cargo test --locked --lib
+
+      - name: cargo test --doc
+        run: cargo test --locked --doc
+
+  fmt:
+    name: rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # rustfmt.toml uses the unstable `imports_layout`, `reorder_impl_items` and `group_imports`,
+      # so the formatting check requires a nightly rustfmt.
+      - name: Install nightly rustfmt
+        run: rustup toolchain install nightly --profile minimal --component rustfmt
+
+      - name: cargo +nightly fmt --check
+        run: cargo +nightly fmt --all --check

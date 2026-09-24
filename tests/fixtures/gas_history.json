@@ -1,0 +1,11 @@
+{
+	"lastTimestamp": 1688396693338,
+	"chainId": "43114",
+	"unitName": "wei",
+	"history": [
+		{ "value": 25, "timestamp": 1688394892940 },
+		{ "value": 25.5, "timestamp": 1688394992940 }
+	],
+	"average24h": 25.01171800476548,
+	"average7d": 25.46623886101168
+}

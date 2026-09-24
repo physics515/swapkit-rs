@@ -1,5 +1,4 @@
 use anyhow::Result;
-use chrono::Utc;
 
 use crate::Swapkit;
 use crate::{api_get_cached_prices, api_get_currencies_with_details, api_get_token_pair_exchange_rate, api_get_token_providers, CachedPrice, CachedPricesParameters, CurrenciesWithDetails, ExchangeRate, Provider, TokenIdentifier};
@@ -34,7 +33,7 @@ impl Swapkit {
 	///
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;
@@ -49,13 +48,20 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_currencies_with_details(&mut self) -> Result<CurrenciesWithDetails> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
-		api_get_currencies_with_details(self.get_config().get_base_url(), self.get_headers()).await
+		api_get_currencies_with_details(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 
 	/// Retrieve the exchange rate between two tokens.
@@ -74,7 +80,7 @@ impl Swapkit {
 	///
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;
@@ -91,13 +97,20 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_token_pair_exchange_rate(&mut self, provider: &str, buy_asset: &str, sell_asset: &str) -> Result<ExchangeRate> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
-		api_get_token_pair_exchange_rate(self.get_config().get_base_url(), self.get_headers(), provider, buy_asset, sell_asset).await
+		api_get_token_pair_exchange_rate(self.get_config().get_base_url(), self.get_headers()?, provider, buy_asset, sell_asset).await
 	}
 
 	/// Retrieve the cached prices for a list of tokens.
@@ -132,7 +145,7 @@ impl Swapkit {
 	///
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;
@@ -148,7 +161,15 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_cached_prices(&mut self, tokens: Vec<String>, metadata: Option<bool>, lookup: Option<bool>, sparkline: Option<bool>) -> Result<Vec<CachedPrice>> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
@@ -157,8 +178,7 @@ impl Swapkit {
 
 		let parameters = CachedPricesParameters { tokens, metadata, lookup, sparkline };
 
-		self.set_last_call(Utc::now());
-		api_get_cached_prices(self.get_config().get_base_url(), self.get_headers(), parameters).await
+		api_get_cached_prices(self.get_config().get_base_url(), self.get_headers()?, parameters).await
 	}
 
 	/// Retrieve a list of all the token providers the API supports.
@@ -181,7 +201,7 @@ impl Swapkit {
 	///
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;
@@ -197,12 +217,19 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_token_providers(&mut self) -> Result<Vec<Provider>> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
-		api_get_token_providers(self.get_config().get_base_url(), self.get_headers()).await
+		api_get_token_providers(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 }

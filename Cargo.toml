@@ -1,7 +1,8 @@
 [package]
 name = "swapkit-rs"
-version = "0.0.11"
+version = "0.1.0"
 edition = "2021"
+rust-version = "1.83"
 categories = ["api-bindings", "cryptography::cryptocurrencies"]
 license = "MIT"
 keywords = ["thorswap", "swapkit", "thorchain", "api"]
@@ -11,21 +12,19 @@ repository = "https://github.com/physics515/swapkit-rs"
 
 [dependencies]
 serde = { version = "1", features = ["derive", "rc"] }
-reqwest = "0"
+# `default-features = false` drops `default-tls`, which is `native-tls` and therefore the whole
+# `openssl-sys` C chain — both an FFI dependency this crate does not want and the source of 11 of
+# the 22 Dependabot alerts on master. `rustls-tls` is the pure-Rust replacement.
+reqwest = { version = "0.12", default-features = false, features = ["charset", "http2", "rustls-tls"] }
 thiserror = "1"
 anyhow = "1"
 serde_json = "1"
-tokio = { version="1", features= ["macros"] }
-serde_urlencoded = "0"
-rand = "0"
-serde-aux = "4"
-chrono = { version="0", features=["serde"] }
-serde_with = { version="3", features=["chrono"] }
-rust_decimal = { version="1", features=["serde", "serde-str", "serde-float", "serde-with-str"] }
-#rust_decimal_macros = "1"
-dotenv = "0"
+tokio = { version = "1", features = ["macros"] }
+chrono = { version = "0.4", features = ["serde"] }
+rust_decimal = { version = "1", features = ["serde", "serde-str", "serde-float", "serde-with-str"] }
 url = "2"
 
 [dev-dependencies]
-tokio-test = "0"
+dotenv = "0.15"
+tokio-test = "0.4"
 

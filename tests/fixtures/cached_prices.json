@@ -1,0 +1,23 @@
+[
+	{
+		"identifier": "BTC.BTC",
+		"provider": "thorchain",
+		"cg": {
+			"id": "bitcoin",
+			"name": "Bitcoin",
+			"market_cap": 538744544621,
+			"total_volume": 10969486163,
+			"price_change_24h_usd": -280.7722306713,
+			"price_change_percentage_24h_usd": -1.00657,
+			"sparkline_in_7d": "[28089.09709191385,27855.474964663084,27927.67807075597]",
+			"timestamp": 1696883306189
+		},
+		"price_usd": 62744.82080390614,
+		"timestamp": 1710352724180
+	},
+	{
+		"identifier": "ETH.ARB-0XB50721BCF8D664C30412CFBC6CF7A15145234AD1",
+		"cg": {},
+		"price_usd": null
+	}
+]

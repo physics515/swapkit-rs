@@ -1,5 +1,4 @@
 use anyhow::Result;
-use chrono::Utc;
 
 use crate::Swapkit;
 use crate::{api_get_gas_history, api_get_gas_rates, api_get_minimum_amount_to_send_with_details, GasHistory, GasPrice, MinimumAmountToSendWithDetails};
@@ -25,7 +24,7 @@ impl Swapkit {
 	///
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;
@@ -42,13 +41,20 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_minimum_amount_to_send_with_details(&mut self, from: &str, to: &str) -> Result<MinimumAmountToSendWithDetails> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
-		api_get_minimum_amount_to_send_with_details(self.get_config().get_base_url(), self.get_headers(), from, to).await
+		api_get_minimum_amount_to_send_with_details(self.get_config().get_base_url(), self.get_headers()?, from, to).await
 	}
 
 	/// Retrieve the gas history for a given chain.
@@ -75,7 +81,7 @@ impl Swapkit {
 	///
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;
@@ -92,13 +98,20 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_gas_history(&mut self, chain_id: &str) -> Result<GasHistory> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
-		api_get_gas_history(self.get_config().get_base_url(), self.get_headers(), chain_id).await
+		api_get_gas_history(self.get_config().get_base_url(), self.get_headers()?, chain_id).await
 	}
 
 	/// Retrieve the current gas rates.
@@ -118,7 +131,7 @@ impl Swapkit {
 	///
 	/// # Example
 	///
-	/// ```rust
+	/// ```rust,no_run
 	/// use swapkit_rs::Swapkit;
 	/// use dotenv;
 	/// use swapkit_rs::Configuration;
@@ -134,12 +147,19 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_gas_rates(&mut self) -> Result<Vec<GasPrice>> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
 
-		self.set_last_call(Utc::now());
-		api_get_gas_rates(self.get_config().get_base_url(), self.get_headers()).await
+		api_get_gas_rates(self.get_config().get_base_url(), self.get_headers()?).await
 	}
 }

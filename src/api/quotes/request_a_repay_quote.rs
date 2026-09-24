@@ -32,7 +32,7 @@ pub async fn api_get_request_a_repay_quote(base_url: &str, headers: HeaderMap, p
 
 	let response = match serde_json::from_str::<RepayQuote>(&response) {
 		Ok(response) => response,
-		Err(error) => bail!(APIError::SerdeError{error, attempt: response}),
+		Err(error) => bail!(APIError::SerdeError { error, attempt: response }),
 	};
 
 	Ok(response)

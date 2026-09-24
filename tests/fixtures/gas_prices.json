@@ -1,0 +1,16 @@
+[
+	{
+		"asset": "THOR.RUNE",
+		"units": "tor",
+		"gas": 2000000,
+		"chainId": "thorchain-mainnet-v1",
+		"gasAsset": 0.02
+	},
+	{
+		"asset": "BTC.BTC",
+		"units": "satsperbyte",
+		"gas": 12,
+		"chainId": "bitcoin",
+		"gasAsset": 0.00000012
+	}
+]

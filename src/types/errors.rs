@@ -10,13 +10,17 @@ pub enum APIError {
 	UrlParsingError(#[from] ParseError),
 
 	#[error("Serde Error: {error} while attempting to {attempt}")]
-	SerdeError {
-                error: serde_json::Error,
-                attempt: String,
-        },
+	SerdeError { error: serde_json::Error, attempt: String },
 
 	#[error("Invalid Parameter: {0}")]
 	InvalidParameter(String),
+
+	#[error("Invalid value for header `{header}`: {source}")]
+	InvalidHeaderValue {
+		header: &'static str,
+		#[source]
+		source: reqwest::header::InvalidHeaderValue,
+	},
 
 	#[error("Client Error: {0}")]
 	ClientError(String),
