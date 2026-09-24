@@ -1,6 +1,17 @@
 use rust_decimal::prelude::*;
 use serde::{Deserialize, Deserializer};
 
+/// Converts a JSON float to a [`Decimal`] without the precision loss of [`Decimal::from_f64`].
+///
+/// `serde_json` parses an unquoted JSON number into an `f64`, and `Decimal::from_f64` then keeps
+/// only ~15 significant digits: `62744.82080390614` comes back as `62744.8208039061`. Formatting
+/// the `f64` first is lossless for any value that round-trips through `f64` — which every number a
+/// JSON producer emitted does — because Rust's `Display` for `f64` is shortest-round-trip. The
+/// `from_f64` fallback covers the few values whose decimal form `Decimal` cannot parse.
+fn decimal_from_f64(f: f64) -> Option<Decimal> {
+	Decimal::from_str(&f.to_string()).ok().or_else(|| Decimal::from_f64(f))
+}
+
 #[allow(clippy::unnecessary_wraps)]
 pub fn deserialize_string_option_from_number<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
 where
@@ -55,7 +66,7 @@ where
 			}
 		}
 		Ok(StringOrNumber::Number(i)) => Ok(Some(Decimal::from(i))),
-		Ok(StringOrNumber::Float(f)) => Decimal::from_f64(f).map_or_else(|| Ok(None), |d| Ok(Some(d))),
+		Ok(StringOrNumber::Float(f)) => Ok(decimal_from_f64(f)),
 		_ => Ok(None),
 	}
 }
@@ -91,7 +102,7 @@ where
 			}
 		}
 		Ok(StringOrNumber::Number(i)) => Ok(Decimal::from(i)),
-		Ok(StringOrNumber::Float(f)) => Decimal::from_f64(f).map_or_else(|| Ok(Decimal::ZERO), Ok),
+		Ok(StringOrNumber::Float(f)) => Ok(decimal_from_f64(f).unwrap_or(Decimal::ZERO)),
 		_ => Ok(Decimal::ZERO),
 	}
 }

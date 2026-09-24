@@ -183,10 +183,22 @@ The whole point: today a green test run proves the network was up, the credentia
 the code was right; a red one could be any of the three.
 
 - [ ] **Capture JSON fixtures** for each endpoint's real response and add deserialization tests over
-      them, so type drift is caught without a network call or a secret.
-- [ ] **Add a fixture test per type that upstream has already broken once** — the git history shows
-      repeated fixes to gas-price and cached-price deserialization (`584cfaa`, `25e0381`, `53dd10a`,
-      `235b692`, `43f9b38`). Each of those is a shape that deserves a pinned fixture.
+      them, so type drift is caught without a network call or a secret. **First slice landed
+      2026-09-24** — `tests/deserialization.rs` with `tests/fixtures/{gas_prices,
+      gas_prices_edge_cases,supported_chains,cached_prices}.json`, 4 tests, all offline and
+      credential-free. Still `[ ]`: the other ~14 endpoints have no fixture. **Next slice:** quotes
+      (`Quote`, `QuoteRoute`) and `ChainsWithDetails`, which are the largest and most nested types.
+- [x] **Add a fixture test per type that upstream has already broken once.** Done 2026-09-24 for the
+      two the git history keeps repairing. `gas_prices_edge_cases.json` pins the whole contract of
+      `deserialize_rust_decimal_from_anything` — number, numeric string, `null`, `""`, `"NULL"`,
+      `"Infinity"`, `"inf"` — which is what `584cfaa`, `25e0381`, `53dd10a` and `235b692` each
+      changed; `cached_prices.json` pins the sparse entry (no provider, empty `cg`, null price) from
+      `43f9b38`.
+- [ ] **Audit the remaining `f64`-mediated decimal paths.** The `Float` arm of the custom
+      deserializers is fixed, but `market_cap`, `total_volume` and the other `CachedPriceCG` fields
+      still use `rust_decimal::serde::float_option::deserialize`, which is `Decimal::from_f64` and
+      therefore has the same ~15-significant-digit ceiling. They hold integers today, so nothing is
+      visibly wrong — pin a fixture before deciding whether to change them.
 - [ ] **Keep the live tests, but behind a feature or an env guard**, so `cargo test` is meaningful
       offline and the network suite is opt-in.
 
