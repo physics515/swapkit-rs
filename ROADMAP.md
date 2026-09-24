@@ -127,11 +127,12 @@ investing in any endpoint-level work — it decides whether later phases are rep
 
 ## Phase 2 — Correctness of the public surface
 
-- [ ] **`dev_base_url` is dead.** It is set in `Configuration::new` (`src/swapkit/config.rs:20`) and
-      never read — there is no getter, no setter and no call path that can select it, so the
-      "add support for dev api" commit (`ec47449`) never actually shipped a user-visible capability.
-      Either finish it (a way to choose the dev base, plumbed into the request path) or remove the
-      field.
+- [x] **`dev_base_url` is dead.** Resolved 2026-09-24 by shipping the capability `ec47449` intended,
+      with less state: the unreadable private field is gone, and the two URLs are now public
+      constants `DEFAULT_BASE_URL` and `DEV_BASE_URL` in `src/swapkit/config.rs`, selectable through
+      the existing `Configuration::set_base_url`. **Breaking** in one narrow way: `Configuration`
+      derives `Serialize`/`Deserialize`, so a persisted configuration from 0.0.11 carries a
+      `dev_base_url` key that no longer maps to a field.
 - [x] **`get_headers()` can panic on user input.** Fixed 2026-09-24. `get_headers` now returns
       `Result<HeaderMap, APIError>` and each of the three headers is built with
       `HeaderValue::from_str(..).map_err(..)?`, surfacing the new
