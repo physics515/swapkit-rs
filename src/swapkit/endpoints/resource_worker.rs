@@ -42,7 +42,15 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_minimum_amount_to_send_with_details(&mut self, from: &str, to: &str) -> Result<MinimumAmountToSendWithDetails> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
@@ -92,7 +100,15 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_gas_history(&mut self, chain_id: &str) -> Result<GasHistory> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
@@ -134,7 +150,15 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_gas_rates(&mut self) -> Result<Vec<GasPrice>> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;

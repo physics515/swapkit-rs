@@ -139,9 +139,11 @@ investing in any endpoint-level work — it decides whether later phases are rep
       `APIError::InvalidHeaderValue { header, source }` variant instead of panicking. All 18 call
       sites in `src/swapkit/endpoints/` propagate it with `?`. A trailing newline in a `.env` API key
       used to abort the process; it now returns an error naming which header was bad.
-- [ ] **Every `# Errors` doc section says `todo`.** They exist only to quiet
-      `clippy::missing_errors_doc` and tell a consumer nothing. Document what each method actually
-      returns on failure, at least for the endpoints that are known-good.
+- [x] **Every `# Errors` doc section says `todo`.** Done 2026-09-24. All 18 endpoint methods now
+      list the exact `APIError` variants they can return, derived per method from the `bail!` sites
+      in the `api_*` function each one calls, so the list is accurate rather than boilerplate — the
+      three quote endpoints are the only ones that can return `UrlParsingError`, and the two
+      unmodelled placeholders are the only ones that cannot return `SerdeError`.
 - [ ] **`anyhow::Result` is the public return type of every endpoint method.** `anyhow` is an
       application error type; a library should expose something a consumer can match on. `APIError`
       (`src/types/errors.rs`) already exists as a `thiserror` enum — return it, and keep `anyhow`

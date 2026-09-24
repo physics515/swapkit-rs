@@ -5,8 +5,21 @@ use crate::{api_get_available_assets_for_pool, api_get_available_lending_assets,
 use crate::{LendingAsset, Loan, Swapkit};
 
 impl Swapkit {
+	/// Requests the assets available for a lending pool.
+	///
+	/// **This endpoint returns nothing useful and is not modelled.** It calls
+	/// `{base_url}lending/{asset}/available`, which — like every other `api.thorswap.net` path —
+	/// answered HTTP 404 to an unauthenticated probe on 2026-09-24. The response body is discarded
+	/// and the method returns `Ok(())` on any successful HTTP exchange. Treat it as a placeholder
+	/// until the `SwapKit` v3 migration replaces it.
+	///
 	/// # Errors
-	/// Endpoint not returning a response.
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
 	pub async fn get_available_assets_for_pool(&mut self, asset: &str) -> Result<()> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
@@ -52,7 +65,15 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_available_lending_assets(&mut self) -> Result<Vec<LendingAsset>> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
@@ -99,7 +120,15 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_loans(&mut self, address: &str, asset: &str) -> Result<Loan> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;

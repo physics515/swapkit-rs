@@ -23,7 +23,10 @@ pub async fn api_get_available_assets_for_pool(base_url: &str, headers: HeaderMa
 		Err(e) => bail!(APIError::ReqwestError(e)),
 	};
 
-	println!("response: {response}");
+	// The response body is deliberately dropped: this endpoint has no modelled type yet (see
+	// `Swapkit::get_available_assets_for_pool`). A library must never write to stdout, so the body
+	// is not printed either.
+	drop(response);
 
 	Ok(())
 }

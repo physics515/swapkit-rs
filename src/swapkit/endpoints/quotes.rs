@@ -46,7 +46,17 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::UrlParsingError`](crate::APIError::UrlParsingError) — the request parameters
+	///   could not be encoded into the endpoint URL.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_request_a_swap_quote(&mut self, parameters: RequestASwapQuoteParams) -> Result<Quote> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
@@ -126,7 +136,17 @@ impl Swapkit {
 	/// ```
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::UrlParsingError`](crate::APIError::UrlParsingError) — the request parameters
+	///   could not be encoded into the endpoint URL.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_request_a_borrow_quote(&mut self, parameters: RequestABorrowQuoteParams) -> Result<BorrowQuote> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
@@ -195,7 +215,17 @@ impl Swapkit {
 	/// ```   
 	///
 	/// # Errors
-	/// todo
+	/// * [`APIError::InvalidHeaderValue`](crate::APIError::InvalidHeaderValue) — the configured
+	///   referer, API key or referrer is not a legal HTTP header value.
+	/// * [`APIError::ClientError`](crate::APIError::ClientError) — the `reqwest` client could not be
+	///   built.
+	/// * [`APIError::UrlParsingError`](crate::APIError::UrlParsingError) — the request parameters
+	///   could not be encoded into the endpoint URL.
+	/// * [`APIError::ReqwestError`](crate::APIError::ReqwestError) — the request failed, or the
+	///   response body could not be read.
+	/// * [`APIError::SerdeError`](crate::APIError::SerdeError) — the response body did not match the
+	///   modelled type. The variant carries the raw body, so a shape change upstream is
+	///   diagnosable from the error alone.
 	pub async fn get_request_a_repay_quote(&mut self, parameters: RequestARepayQuoteParams) -> Result<RepayQuote> {
 		// Wait for rate limit timer
 		self.sleep_until_ok_to_call().await;
