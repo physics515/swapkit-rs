@@ -55,6 +55,22 @@ async fn main() {
 }
 ```
 
+## Choosing the API instance
+
+The base URL is configurable and is never hardcoded into a call path. Two well-known instances are
+exported as constants:
+
+```rust
+use swapkit_rs::{Configuration, DEFAULT_BASE_URL, DEV_BASE_URL};
+
+let mut config = Configuration::new(None, "referer", "x-api-key");
+assert_eq!(config.get_base_url(), DEFAULT_BASE_URL);
+
+config.set_base_url(DEV_BASE_URL.to_string());
+```
+
+Pass any other URL to `set_base_url` to point the client at a different instance.
+
 ## Minimum supported Rust version
 
 **Rust 1.83.** Verified by building and running the full test suite on 1.83.0; 1.82 does not
